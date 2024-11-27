@@ -1,0 +1,158 @@
+﻿@page
+@model RegisterSellerModel
+@{
+    ViewData["Title"] = "Đăng ký làm người bán";
+}
+<div class="mt-10">
+    <h1 class="text-center font-bold text-2xl">@ViewData["Title"]</h1>
+    <form method="post" enctype="multipart/form-data" class="max-w-4xl mx-auto p-6 bg-white rounded-lg dark:bg-gray-800">
+        <div asp-validation-summary="ModelOnly" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-800"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Email -->
+            <div class="mb-4">
+                <label asp-for="Input.Email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                <input asp-for="Input.Email" type="email" id="email"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Email" required />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <!-- Tên cửa hàng -->
+            <div class="mb-4">
+                <label asp-for="Input.TenCuaHang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tên cửa hàng</label>
+                <input asp-for="Input.TenCuaHang" id="TenCuaHang"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Tên cửa hàng" required />
+                <span asp-validation-for="Input.TenCuaHang" class="text-danger"></span>
+            </div>
+
+            <!-- Địa chỉ cửa hàng -->
+            <div class="mb-4">
+                <label asp-for="Input.DiaChiCuaHang" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Địa chỉ</label>
+                <input asp-for="Input.DiaChiCuaHang" id="DiaChiCuaHang"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Địa chỉ" required />
+                <span asp-validation-for="Input.DiaChiCuaHang" class="text-danger"></span>
+            </div>
+
+            <!-- Số điện thoại -->
+            <div class="mb-4">
+                <label asp-for="Input.SoDienThoai" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Số điện thoại</label>
+                <input asp-for="Input.SoDienThoai" type="text" id="SoDienThoai"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Số điện thoại" required />
+                <span asp-validation-for="Input.SoDienThoai" class="text-danger"></span>
+            </div>
+
+            <!-- Mã số thuế -->
+            <div class="mb-4">
+                <label asp-for="Input.MaSoThue" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mã số thuế</label>
+                <input asp-for="Input.MaSoThue" id="MaSoThue"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="Mã số thuế" required />
+                <span asp-validation-for="Input.MaSoThue" class="text-danger"></span>
+            </div>
+
+            <!-- Ảnh đại diện -->
+            <div class="mb-4">
+                <label asp-for="Input.UrlAnhDaiDien" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Ảnh đại diện cửa hàng</label>
+                <input asp-for="Input.UrlAnhDaiDien" type="file" id="UrlAnhDaiDien"
+                       class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                       accept="image/*" />
+                <span asp-validation-for="Input.UrlAnhDaiDien" class="text-danger"></span>
+            </div>
+
+            <!-- Mật khẩu -->
+            <div class="mb-4">
+                <label asp-for="Input.Password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mật khẩu</label>
+                <input asp-for="Input.Password" type="password" id="password"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="************" required />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <!-- Nhập lại mật khẩu -->
+            <div class="mb-4">
+                <label asp-for="Input.ConfirmPassword" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nhập lại mật khẩu</label>
+                <input asp-for="Input.ConfirmPassword" type="password" id="confirmPassword"
+                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       placeholder="************" required />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Submit button -->
+        <div class="mt-6 text-center">
+            <button type="submit" style="background-color: #e27a23"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm w-full sm:w-auto px-6 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Đăng ký
+            </button>
+            <p class="mt-4">
+                Bạn đã có tài khoản? <a class="text-blue-500 hover:underline" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Đăng nhập</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+@* <div class="row">
+    <div class="col-md-4">
+        <form id="registerSellerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new seller account.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.Email"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.Password"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.ConfirmPassword"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button id="registerSellerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register as Seller</button>
+        </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register as a Seller.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                article
+                                about setting up this ASP.NET application to support logging in via external services
+                            </a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-seller-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Register as Seller using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div> *@
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

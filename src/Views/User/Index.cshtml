@@ -1,0 +1,104 @@
+﻿@using WebHM.Services;
+@model PaginatedList<ApplicationUser>
+
+@{
+    ViewData["Title"] = "Danh sách người dùng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Form tìm kiếm -->
+<form method="GET" asp-action="Index" class="mb-6">
+    <label for="search" class="block text-sm font-medium text-gray-900 dark:text-white">Tìm kiếm người dùng</label>
+    <input type="text"
+           name="query"
+           placeholder="Tìm kiếm người dùng"
+           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+           value="@ViewBag.SearchQuery" />
+    <button type="submit" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tìm kiếm</button>
+    <a asp-action="Create" type="button" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo mới</a>
+</form>
+<table class="table-auto w-full border-collapse border border-gray-300">
+    <thead>
+        <tr class="bg-gray-100">
+            <th class="border border-gray-300 px-4 py-2 text-left">Tên người dùng</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Email</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Vai trò</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Items)
+        {
+            <tr>
+                <td class="border border-gray-300 px-4 py-2">@user.UserName</td>
+                <td class="border border-gray-300 px-4 py-2">@user.Email</td>
+                <td class="border border-gray-300 px-4 py-2">
+                    @* Nếu có nhiều vai trò, hiển thị chúng *@
+                    @* @(string.Join(", ", (await _userManager.GetRolesAsync(user)))) *@
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                    <a asp-action="Edit" asp-route-id="@user.Id" class="text-blue-500 hover:underline">Chỉnh sửa</a> |
+                    <a asp-action="Delete" asp-route-id="@user.Id" class="text-red-500 hover:underline">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="flex justify-center mt-8">
+    <nav class="pagination-wrap">
+        <ul class="inline-flex items-center space-x-2">
+            <!-- Previous Button -->
+            @if (Model.HasPreviousPage)
+            {
+                <li>
+                    <a href="@Url.Action("Index", new { pageIndex = Model.PageIndex - 1, query = ViewBag.SearchQuery })"
+                       class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 rounded-md">
+                        Trước
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <span class="px-4 py-2 bg-gray-200 text-gray-400 border border-gray-300 rounded-md cursor-not-allowed">
+                        Trước
+                    </span>
+                </li>
+            }
+
+            <!-- Page Numbers -->
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li>
+                    <a href="@Url.Action("Index", new { pageIndex = i, query = ViewBag.SearchQuery })"
+                       class="px-4 py-2 border border-gray-300 rounded-md @(i == Model.PageIndex ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200")">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- Next Button -->
+            @if (Model.HasNextPage)
+            {
+                <li>
+                    <a href="@Url.Action("Index", new { pageIndex = Model.PageIndex + 1, query = ViewBag.SearchQuery })"
+                       class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 rounded-md">
+                        Sau
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <span class="px-4 py-2 bg-gray-200 text-gray-400 border border-gray-300 rounded-md cursor-not-allowed">
+                        Sau
+                    </span>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>

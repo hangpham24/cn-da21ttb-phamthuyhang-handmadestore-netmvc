@@ -1,0 +1,86 @@
+﻿@model ApplicationUser
+
+@{
+    ViewData["Title"] = "Tạo người dùng mới";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" enctype="multipart/form-data" method="post">
+    <div class="grid grid-cols-2 gap-6">
+        <!-- Grid container -->
+        <!-- Cột 1 -->
+        <div class="form-group">
+            <label asp-for="UserName"></label>
+            <input asp-for="UserName" class="form-control" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="HoTen"></label>
+            <input asp-for="HoTen" class="form-control" />
+            <span asp-validation-for="HoTen" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DiaChi"></label>
+            <input asp-for="DiaChi" class="form-control" />
+            <span asp-validation-for="DiaChi" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="NgaySinh"></label>
+            <input asp-for="NgaySinh" type="date" class="form-control" />
+            <span asp-validation-for="NgaySinh" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="TenCuaHang"></label>
+            <input asp-for="TenCuaHang" class="form-control" />
+            <span asp-validation-for="TenCuaHang" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DiaChiCuaHang"></label>
+            <input asp-for="DiaChiCuaHang" class="form-control" />
+            <span asp-validation-for="DiaChiCuaHang" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="MaSoThue"></label>
+            <input asp-for="MaSoThue" class="form-control" />
+            <span asp-validation-for="MaSoThue" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="NgayDangKyCuaHang"></label>
+            <input asp-for="NgayDangKyCuaHang" type="date" class="form-control" />
+            <span asp-validation-for="NgayDangKyCuaHang" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="HinhAnh">Ảnh đại diện</label>
+            <input type="file" name="HinhAnh" class="form-control-file" />
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-6 flex justify-end gap-4">
+        <button type="submit" class="btn btn-primary">Tạo</button>
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </div>
+</form>

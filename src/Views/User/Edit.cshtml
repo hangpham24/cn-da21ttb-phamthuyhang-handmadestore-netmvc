@@ -1,0 +1,105 @@
+﻿@model WebHM.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Sửa Người Dùng";
+    Layout = User.IsInRole("Admin") ? "~/Views/Shared/_AdminLayout.cshtml" : "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-2xl text-center mt-10 font-semibold mb-4">Sửa Người Dùng</h1>
+
+<div class="flex justify-center p-4">
+    <div class="w-full max-w-4xl">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" class="grid grid-cols-2 gap-6">
+            <div asp-validation-summary="ModelOnly" class="col-span-2 text-red-500 mb-4"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Cột trái -->
+            <div>
+                <!-- Họ Tên -->
+                <div class="form-group">
+                    <label asp-for="HoTen" class="block text-sm font-medium text-gray-700">Họ Tên</label>
+                    <input asp-for="HoTen" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="HoTen" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Ngày Sinh -->
+                <div class="form-group">
+                    <label asp-for="NgaySinh" class="block text-sm font-medium text-gray-700">Ngày Sinh</label>
+                    <input asp-for="NgaySinh" type="date" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="NgaySinh" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Tên Cửa Hàng -->
+                <div class="form-group">
+                    <label asp-for="TenCuaHang" class="block text-sm font-medium text-gray-700">Tên Cửa Hàng</label>
+                    <input asp-for="TenCuaHang" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="TenCuaHang" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Mã Số Thuế -->
+                <div class="form-group">
+                    <label asp-for="MaSoThue" class="block text-sm font-medium text-gray-700">Mã Số Thuế</label>
+                    <input asp-for="MaSoThue" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="MaSoThue" class="text-red-500 text-sm"></span>
+                </div>
+            </div>
+
+            <!-- Cột phải -->
+            <div>
+                <!-- Email -->
+                <div class="form-group">
+                    <label asp-for="Email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input asp-for="Email" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled />
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="form-group">
+                    <label asp-for="DiaChi" class="block text-sm font-medium text-gray-700">Địa Chỉ</label>
+                    <input asp-for="DiaChi" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="DiaChi" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Địa chỉ cửa hàng -->
+                <div class="form-group">
+                    <label asp-for="DiaChiCuaHang" class="block text-sm font-medium text-gray-700">Địa Chỉ Cửa Hàng</label>
+                    <input asp-for="DiaChiCuaHang" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="DiaChiCuaHang" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Ngày đăng ký -->
+                <div class="form-group">
+                    <label asp-for="NgayDangKyCuaHang" class="block text-sm font-medium text-gray-700">Ngày Đăng Ký</label>
+                    <input asp-for="NgayDangKyCuaHang" type="date" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="NgayDangKyCuaHang" class="text-red-500 text-sm"></span>
+                </div>
+            </div>
+
+            <!-- Ảnh đại diện -->
+            <div class="col-span-2">
+                <label for="avatarUpload" class="block text-sm font-medium text-gray-700">Ảnh Đại Diện</label>
+                @if (!string.IsNullOrEmpty(Model.UrlAnhDaiDien))
+                {
+                    <div class="mb-2">
+                        <img src="@Model.UrlAnhDaiDien" alt="Ảnh đại diện hiện tại" class="h-24 w-24 rounded-full object-cover" />
+                    </div>
+                }
+                <input type="file" name="HinhAnh" id="avatarUpload" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <!-- Nút submit -->
+            <div class="col-span-2">
+                <input type="submit" value="Lưu" class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-4 text-center">
+    <a asp-action="Index" class="text-blue-600 hover:underline">Quay lại danh sách</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

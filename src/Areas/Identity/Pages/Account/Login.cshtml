@@ -1,0 +1,154 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<!-- End breadcrumb section -->
+
+<form method="post" id="account" style="margin-top: 56px" class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-white shadow-xl rounded-2xl space-y-6 dark:bg-gray-900">
+    <!-- Left Side - Form -->
+    <div class="space-y-6">
+        <!-- Validation Summary -->
+        <div asp-validation-summary="ModelOnly"
+             class="p-4 text-sm text-red-800 bg-red-100 border border-red-300 rounded-lg dark:bg-red-200 dark:text-red-900"></div>
+
+        <!-- Title -->
+        <h2 class="text-2xl font-bold text-center text-gray-800 dark:text-white">Đăng nhập</h2>
+        <p class="text-sm text-center text-gray-500 dark:text-gray-400">
+            Chào mừng trở lại! Đăng nhập để tiếp tục.
+        </p>
+
+        <!-- Email Input -->
+        <div class="space-y-1">
+            <label asp-for="Input.Email" class="block text-sm font-medium text-gray-900 dark:text-gray-300">Email</label>
+            <input asp-for="Input.Email" type="email" id="email"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   placeholder="Nhập email của bạn" required />
+            <span asp-validation-for="Input.Email" class="text-sm text-red-600 dark:text-red-400"></span>
+        </div>
+
+        <!-- Password Input -->
+        <div class="space-y-1">
+            <label asp-for="Input.Password" class="block text-sm font-medium text-gray-900 dark:text-gray-300">Mật khẩu</label>
+            <input asp-for="Input.Password" type="password" id="password"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   placeholder="************" required />
+            <span asp-validation-for="Input.Password" class="text-sm text-red-600 dark:text-red-400"></span>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="flex items-center">
+            <input asp-for="Input.RememberMe" id="remember" type="checkbox"
+                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:focus:ring-blue-500" />
+            <label asp-for="Input.RememberMe" class="ml-2 text-sm text-gray-900 dark:text-gray-300">Nhớ mật khẩu</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" style="background-color: #e27a23"
+                class="w-full rounded-full py-2 text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg text-lg font-medium shadow-md focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 transition-transform duration-300 transform hover:scale-105">
+            Đăng nhập
+        </button>
+
+        <!-- Forgot Password -->
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+            <a id="forgot-password" asp-page="./ForgotPassword" class="text-blue-500 hover:underline">Quên mật khẩu?</a>
+        </p>
+
+        <!-- Registration Link -->
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+            Bạn chưa có tài khoản?
+            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-blue-500 hover:underline">Đăng ký</a>
+        </p>
+    </div>
+
+    <!-- Right Side - Image -->
+    <div class="md:block bg-cover bg-center rounded-lg"
+         style="background-image: url('https://picsum.photos/seed/picsum/200/300'); height: 400px;">
+        <!-- Bạn có thể thay đổi đường dẫn đến ảnh của bạn tại đây -->
+    </div>
+</form>
+
+
+
+
+
+@* <form id="account" method="post">
+            <h2>Use a local account to log in.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating">
+            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+            <label asp-for="Input.Email" class="form-label"></label>
+            <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating">
+            <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+            <label asp-for="Input.Password" class="form-label"></label>
+            <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div>
+            <div class="checkbox">
+            <label asp-for="Input.RememberMe" class="form-label">
+            <input class="form-check-input" asp-for="Input.RememberMe" />
+            @Html.DisplayNameFor(m => m.Input.RememberMe)
+            </label>
+            </div>
+            </div>
+            <div>
+            <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+            </div>
+            <div>
+            <p>
+            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+            </p>
+            <p>
+            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+            </p>
+            <p>
+            <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+            </p>
+            </div>
+            </form> *@
+@*         </section>
+    </div>
+</div> *@
+@*     </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to log in.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                article
+                                about setting up this ASP.NET application to support logging in via external services
+                            </a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div> *@
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

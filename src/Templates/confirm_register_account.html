@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận tài khoản</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+            .header img {
+                max-width: 150px;
+            }
+
+            .header h1 {
+                color: #E27A23;
+                margin-top: 10px;
+            }
+
+        .content {
+            line-height: 1.6;
+            padding: 20px;
+            color: #555;
+        }
+
+            .content h2 {
+                color: #333;
+            }
+
+        .btn {
+            display: inline-block;
+            margin: 20px 0;
+            background-color: #e27a23;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+            .btn:hover {
+                background-color: #45a049;
+            }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!--<img src="https://yourwebsite.com/logo.png" alt="HandMade Store Logo">-->
+            <h1>Chào mừng bạn đến với HandMade Store!</h1>
+        </div>
+        <div class="content">
+            <h2>Xác nhận email của bạn</h2>
+            <p>
+                Cảm ơn bạn đã đăng ký tài khoản tại HandMade Store. Hãy xác nhận địa chỉ email của bạn
+                để hoàn tất quá trình đăng ký và bắt đầu khám phá các sản phẩm handmade độc đáo của chúng tôi.
+            </p>
+            <p>
+                Nhấn vào nút bên dưới để xác nhận:
+            </p>
+            <a href="{{confirmation_link}}" class="btn">Xác nhận tài khoản</a>
+            <p>
+                Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.
+            </p>
+        </div>
+        <div class="footer">
+            &copy; 2024 HandMade Store.
+        </div>
+    </div>
+</body>
+</html>
