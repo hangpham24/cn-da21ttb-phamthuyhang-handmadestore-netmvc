@@ -1,0 +1,68 @@
+﻿@model IEnumerable<WebHM.Models.BinhLuan>
+
+@{
+    ViewData["Title"] = "Index";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DiemDanhGia)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoiDungBinhLuan)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NgayBinhLuan)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SanPham)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KhachHang)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiemDanhGia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NoiDungBinhLuan)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NgayBinhLuan)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SanPham.TenSanPham)
+            </td>
+            <td>
+                    @(item.KhachHang.HoTen ?? item.KhachHang.TenCuaHang ?? item.KhachHang.UserName.Split("@")[0])
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MaBinhLuan">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MaBinhLuan">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MaBinhLuan">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

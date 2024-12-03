@@ -1,0 +1,461 @@
+﻿@using WebHM.Services
+@model WebHM.Models.SanPham
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+@if (User.IsInRole("Admin"))
+{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+else if (User.IsInRole("Seller"))
+{
+    Layout = "~/Views/Shared/_SellerLayout.cshtml";
+}
+else
+{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Single Product -->
+<div class="single-product mt-150 mb-150">
+    <div class="container">
+        <div class="row">
+            <!-- Product Image -->
+            <div class="col-md-5">
+                <div class="single-product-img">
+                    <img src="@Model.HinhAnh" alt="@Model.TenSanPham" class="img-fluid">
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="single-product-content">
+                    <h3>@Model.TenSanPham</h3>
+                    <p class="single-product-pricing"><span>@* Giá: *@ </span>@ChuyenTienTe.Dec2VND(Model.Gia)</p>
+                    <p class="mb-3">@Model.MoTa</p>
+                    <div class="single-product-form">
+                        <form id="addToCartForm">
+                            <input type="number" id="quantity" name="quantity" placeholder="Số lượng" min="1" value="1">
+                            <input type="hidden" name="sanPhamId" value="@Model.MaSanPham" />
+                        </form>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a href="#" class="cart-btn btn btn-primary mt-2" onclick="addToCart(event)">
+                                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/Identity/Account/Login" class="cart-btn btn btn-primary mt-2">
+                                <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                            </a>
+                        }
+
+
+                        <p class="mt-3"><strong>Danh mục: </strong>@Model.DanhMuc?.TenDanhMuc</p>
+                        <p><strong>Cửa hàng: </strong>@Model.NguoiBan?.TenCuaHang</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Single Product -->
+<!-- Related Products -->
+<div class="more-products mb-150">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <div class="section-title">
+                    <h3><span class="orange-text">Sản phẩm</span> liên quan</h3>
+                    <p>Những sản phẩm cùng danh danh mục.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var product in ViewBag.RelatedProducts as List<WebHM.Models.SanPham>)
+            {
+                <div class="col-lg-4 col-md-6 text-center">
+                    <div class="single-product-item">
+                        <div class="product-image">
+                            <a href="@Url.Action("Details", "SanPhams", new { id = product.MaSanPham })">
+                                <img src="@product.HinhAnh" alt="@product.TenSanPham" class="img-fluid">
+                            </a>
+                        </div>
+                        <h3>@product.TenSanPham</h3>
+                        <p class="product-price"><span>@* Giá: *@ </span>@String.Format("{0:C}", product.Gia)</p>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a href="#" class="cart-btn btn btn-secondary mt-2"><i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng</a>
+                        }
+                        else
+                        {
+                            <a href="#" class="cart-btn btn btn-secondary mt-2"><i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- End Related Products -->
+<!-- Product Comments Section -->
+<div class="product-comments mt-24 mb-24">
+    <div class="container mx-auto">
+        <!-- Section Title -->
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">Đánh giá sản phẩm</h2>
+            <p class="text-lg text-gray-600">Hãy cho chúng tôi biết ý kiến của bạn về sản phẩm này.</p>
+        </div>
+        <!-- Comments List -->
+        <div class="comments-list space-y-10 mb-10">
+            @foreach (var comment in Model.BinhLuans)
+            {
+                <div class="comment-item mb-8 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-4">
+                        <!-- Avatar -->
+                        <img src="@comment.KhachHang?.UrlAnhDaiDien"
+                             alt="@comment.KhachHang?.HoTen"
+                             class="w-14 h-14 rounded-full border-2 border-gray-300 hover:border-blue-400 transition-all duration-300">
+
+                        <!-- User Info -->
+                        <div>
+                            <p class="font-semibold text-gray-800 text-lg">
+                                @(
+                                    comment.KhachHang?.HoTen ??
+                                    comment.KhachHang?.UserName.Split('@')[0] ??
+                                    comment.KhachHang?.TenCuaHang ??
+                                    "Chưa có tên"
+                                    )
+                            </p>
+                            <p class="text-sm text-gray-500 mt-1">
+                                @comment.NgayBinhLuan.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Comment Content -->
+                    <div class="mt-4">
+                        <p class="text-lg text-gray-800 leading-relaxed">
+                            @comment.NoiDungBinhLuan
+                        </p>
+                    </div>
+
+                    <!-- Star Rating -->
+                    <div class="mt-3 flex items-center">
+                        <span class="text-yellow-400 flex">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= comment.DiemDanhGia)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-star text-gray-300"></i>
+                                }
+                            }
+                        </span>
+                        <p class="ml-2 text-gray-600 text-sm">(@comment.DiemDanhGia/5)</p>
+                    </div>
+
+                    <!-- Delete Button -->
+                    @if (User.Identity.IsAuthenticated && (comment.KhachHang?.UserName == User.Identity.Name || User.IsInRole("Admin")))
+                    {
+                        @*                         <div class="mt-4">
+                <a href="javascript:void(0);"
+                class="text-red-500 hover:text-red-600 flex items-center space-x-2"
+                onclick="deleteComment(@comment.MaBinhLuan)">
+                <i class="fas fa-trash-alt"></i>
+                <span>Xóa bình luận</span>
+                </a>
+                </div> *@
+                        <div class="mt-4">
+                            <form id="form-xoa-binh-luan" method="post" asp-controller="BinhLuans" asp-action="XoaBinhLuan" class="flex items-center space-x-2">
+                                <input type="hidden" name="id" value="@comment.MaBinhLuan" />
+                                <button type="button" onclick="xoaBinhLuan(this)" class="text-red-500 hover:text-red-600 flex items-center space-x-2">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span>Xóa bình luận</span>
+                                </button>
+                            </form>
+
+                            <script>
+                                async function xoaBinhLuan(button) {
+                                    if (!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+
+                                    const form = button.closest('form');
+                                    const formData = new FormData(form);
+
+                                    try {
+                                        const response = await fetch(form.action, {
+                                            method: 'POST',
+                                            body: formData,
+                                            headers: {
+                                                'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+                                            }
+                                        });
+                                        const result = await response.json();
+
+                                        if (result.success) {
+                                            alert(result.message);
+                                            // Loại bỏ bình luận khỏi giao diện
+                                            form.closest('.binh-luan').remove();
+                                        } else {
+                                            alert(result.message);
+                                        }
+                                    } catch (error) {
+                                        location.reload();
+                                    }
+                                }
+                            </script>
+
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <!-- Add Comment Form -->
+            <div class="mt-12">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Thêm bình luận của bạn</h3>
+                <form method="post" action="@Url.Action("AddComment", "SanPhams", new { id = Model.MaSanPham })">
+                    <!-- Rating -->
+                    <div class="flex space-x-2 mb-4">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <input type="radio" name="Rating" value="@i" id="star-@i" class="hidden" />
+                            <label for="star-@i" class="text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition duration-200">
+                                <i class="fas fa-star"></i>
+                            </label>
+                        }
+                    </div>
+
+
+                    <!-- Comment Input -->
+                    <textarea required name="Content" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 text-gray-800" placeholder="Viết bình luận của bạn..." rows="4"></textarea>
+
+                    <!-- Submit Button -->
+                    <div class="mt-4 flex justify-end">
+                        <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none transition-colors duration-300">Gửi bình luận</button>
+                    </div>
+                </form>
+            </div>
+        }
+
+    </div>
+</div>
+<!-- CSS Improvements -->
+<style>
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .single-product-content {
+            text-align: center;
+        }
+
+        .single-product-img img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .more-products h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Star rating styles */
+    label:hover,
+    input[name="Rating"]:checked + label {
+        color: #fbbf24;
+    }
+
+    label {
+        transition: color 0.3s ease-in-out;
+    }
+
+    /* Modal adjustments */
+    .modal-body span {
+        animation: pop 0.4s ease-in-out;
+    }
+
+    @@keyframes pop {
+        0% {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
+
+<!-- Modal -->
+<div id="cartModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="modal-overlay absolute inset-0 bg-gray-600 opacity-50"></div>
+    <div class="modal-container bg-white w-1/3 rounded-lg shadow-lg z-10 p-5">
+        <div class="modal-header flex justify-between items-center">
+            <h2 class="text-xl font-semibold" id="modalTitle">Thông báo</h2>
+            @*  <button onclick="closeModal()" class="text-xl">&times;</button> *@
+        </div>
+        <div class="modal-body flex justify-center items-center my-4">
+            <span id="modalIcon" class="text-4xl"></span>
+            <p id="modalMessage" class="ml-3 text-lg"></p>
+        </div>
+        <div class="modal-footer flex justify-end mt-4">
+            <button onclick="closeModal()" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">Đóng</button>
+        </div>
+    </div>
+</div>
+<style>
+    .product-image img {
+        width: 100%;
+        height: 200px; /* Thay đổi chiều cao theo ý bạn */
+        object-fit: cover; /* Đảm bảo ảnh phủ đầy khung mà không bị biến dạng */
+        object-position: center; /* Đảm bảo ảnh được căn giữa trong khung */
+    }
+</style>
+<!-- End Modal -->
+<script>
+    @*     function deleteComment(commentId) {
+        if (confirm("Bạn có chắc muốn xóa bình luận này?")) {
+        $.ajax({
+        url: '/SanPhams/DeleteComment', // URL xóa bình luận
+        type: 'POST',
+        data: { id: commentId },
+        success: function (response) {
+        // Nếu xóa thành công, có thể xóa phần tử bình luận khỏi giao diện
+        alert("Bình luận đã được xóa!");
+        location.reload(); // Tải lại trang để cập nhật danh sách bình luận
+        },
+        error: function () {
+        alert("Có lỗi xảy ra khi xóa bình luận.");
+        }
+        });
+        }
+        } *@
+
+        // Handle star rating click
+        document.querySelectorAll('label[for^="star-"]').forEach((label, index) => {
+            label.addEventListener('click', () => {
+                // Làm sáng tất cả các sao từ trái sang phải
+                const stars = document.querySelectorAll('label[for^="star-"]');
+
+                stars.forEach((l, i) => {
+                    // Kiểm tra xem vị trí sao có nằm trong phạm vi sao được chọn hay không
+                    if (i <= index) {
+                        l.classList.add('text-yellow-400'); // Đánh dấu sao vàng
+                    } else {
+                        l.classList.remove('text-yellow-400'); // Loại bỏ màu vàng từ các sao chưa chọn
+                    }
+                });
+
+                // Đánh dấu sao đã chọn
+                const selectedRating = index + 1;
+                document.querySelector('input[name="Rating"][value="' + selectedRating + '"]').checked = true;
+            });
+        });
+
+    // Improved addToCart function
+    async function addToCart(event) {
+        event.preventDefault();
+        const sanPhamId = $('input[name="sanPhamId"]').val();
+        const soLuong = $('#quantity').val();
+        try {
+            const response = await $.post('@Url.Action("ThemVaoGioHang", "GioHangs")', {
+                sanPhamId,
+                soLuong
+            });
+
+            showModal('success', 'Sản phẩm đã được thêm vào giỏ hàng!', 'check-circle');
+            setTimeout(() => (window.location.href = '/Giohangs'), 1500);
+        } catch (error) {
+            showModal('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng!', 'exclamation-circle');
+        }
+    }
+
+    // Optimized modal management
+    function showModal(status, message, icon) {
+        const modal = document.getElementById('cartModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalMessage = document.getElementById('modalMessage');
+
+        // Reset classes
+        modalIcon.className = '';
+        modalMessage.className = '';
+
+        // Apply styles
+        modalIcon.classList.add('fa', `fa-${icon}`, status === 'success' ? 'text-green-500' : 'text-red-500');
+        modalMessage.classList.add(status === 'success' ? 'text-green-500' : 'text-red-500');
+        modalTitle.textContent = status === 'success' ? 'Thành công' : 'Lỗi';
+
+        modalMessage.textContent = message;
+
+        modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('cartModal');
+        modal.classList.add('hidden');
+    }
+
+    // Handle star rating click
+    document.querySelectorAll('label[for^="star-"]').forEach((label, index) => {
+        label.addEventListener('click', () => {
+            document.querySelectorAll('label[for^="star-"]').forEach((l, i) => {
+                l.classList.toggle('active', i <= index);
+            });
+        });
+    });
+</script>
+@*
+<h1>Details</h1>
+
+<div>
+    <h4>SanPham</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TenSanPham)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TenSanPham)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Gia)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Gia)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MoTa)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MoTa)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HinhAnh)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HinhAnh)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DanhMuc)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DanhMuc.MaDanhMuc)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NguoiBan)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NguoiBan.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.MaSanPham">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+ *@

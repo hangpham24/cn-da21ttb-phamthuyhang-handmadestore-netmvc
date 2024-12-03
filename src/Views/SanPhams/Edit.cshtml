@@ -1,0 +1,100 @@
+﻿@using System.Security.Claims
+@model WebHM.Models.SanPham
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if (User.IsInRole("Seller"))
+    {
+        Layout = "~/Views/Shared/_SellerLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="max-w-md mx-auto mt-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-semibold text-center text-gray-900 dark:text-white mb-6">Chỉnh Sửa Sản Phẩm</h1>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="space-y-5">
+        <!-- Hidden Input: MaSanPham -->
+        <input type="hidden" asp-for="MaSanPham" />
+
+        <!-- Tên sản phẩm -->
+        <div>
+            <label asp-for="TenSanPham" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tên sản phẩm</label>
+            <input asp-for="TenSanPham" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Cập nhật tên sản phẩm" required />
+            <span asp-validation-for="TenSanPham" class="text-xs text-red-500"></span>
+        </div>
+
+        <!-- Giá -->
+        <div>
+            <label asp-for="Gia" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Giá sản phẩm</label>
+            <input asp-for="Gia" type="number" step="0.01" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Cập nhật giá sản phẩm" required />
+            <span asp-validation-for="Gia" class="text-xs text-red-500"></span>
+        </div>
+
+        <!-- Mô tả -->
+        <div>
+            <label asp-for="MoTa" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mô tả</label>
+            <textarea asp-for="MoTa" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Cập nhật mô tả sản phẩm"></textarea>
+            <span asp-validation-for="MoTa" class="text-xs text-red-500"></span>
+        </div>
+        <!-- Hình ảnh cũ -->
+        <div>
+            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hình ảnh hiện tại</label>
+            @if (!string.IsNullOrEmpty(Model.HinhAnh))
+            {
+                <img src="@Model.HinhAnh" alt="Hình ảnh sản phẩm" class="w-32 h-32 object-cover rounded-lg">
+            }
+            else
+            {
+                <p class="text-xs text-gray-500">Chưa có hình ảnh</p>
+            }
+        </div>
+
+        <!-- Hình ảnh -->
+        <div>
+            <label asp-for="HinhAnh" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hình ảnh mới</label>
+            <input type="file" name="newImage" accept="image/*" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <span asp-validation-for="HinhAnh" class="text-xs text-red-500"></span>
+        </div>
+
+        <!-- Danh mục -->
+        <div>
+            <label asp-for="MaDanhMuc" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Danh mục</label>
+            <select asp-for="MaDanhMuc" asp-items="ViewBag.MaDanhMuc" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </select>
+            <span asp-validation-for="MaDanhMuc" class="text-xs text-red-500"></span>
+        </div>
+
+        <!-- Người bán -->
+        @if (User.IsInRole("Admin"))
+        {
+            <div>
+                <label asp-for="NguoiBanId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Người bán</label>
+                <select asp-for="NguoiBanId" asp-items="ViewBag.NguoiBanId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </select>
+                <span asp-validation-for="NguoiBanId" class="text-xs text-red-500"></span>
+            </div>
+        }
+        else if (User.IsInRole("Seller"))
+        {
+            <input asp-for="NguoiBanId" type="hidden" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+        }
+
+        <!-- Nút hành động -->
+        <div class="flex justify-between">
+            <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Lưu 
+            </button>
+            <a href="@Url.Action("Index", "SanPhams")" class="w-full ml-4 text-center text-gray-900 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-400 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
+                Quay lại
+            </a>
+        </div>
+    </form>
+</div>
