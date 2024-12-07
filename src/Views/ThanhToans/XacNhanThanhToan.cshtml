@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "Xác nhận Đơn Hàng";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận Đơn Hàng</title>
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.2.0/dist/tailwind.min.js"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <div class="max-w-4xl mx-auto px-6 py-16">
+        <!-- Card Container -->
+        <div class="bg-white shadow-lg rounded-lg p-8 md:p-12">
+
+            <!-- Title -->
+            <div class="text-center">
+                <h2 class="text-3xl font-semibold text-indigo-600">Cảm ơn bạn đã đặt hàng!</h2>
+                <p class="mt-4 text-lg text-gray-600">Đơn hàng của bạn đã được xác nhận và đang trong quá trình xử lý.</p>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="mt-8 space-y-4">
+                <h3 class="text-2xl font-semibold text-gray-800">Thông tin bên nhận:</h3>
+                <div>
+                    <p class="text-gray-600">Người nhận: <span class="font-semibold text-gray-800">@ViewBag.DonHang.NguoiNhan</span></p>
+                    <p class="text-gray-600">Địa chỉ: <span class="font-semibold text-gray-800">@ViewBag.DonHang.DiaChiGiaoHang</span></p>
+                    <p class="text-gray-600">Số điện thoại: <span class="font-semibold text-gray-800">@ViewBag.DonHang.SoDienThoaiGiaoHang</span></p>
+                </div>
+            </div>
+
+            <!-- Products List -->
+            <div class="mt-10">
+                <h3 class="text-2xl font-semibold text-gray-800">Thông tin sản phẩm:</h3>
+
+                <div class="overflow-x-auto mt-6">
+                    <table class="w-full border-1 rounded-lg shadow-md">
+                        <thead class="bg-indigo-600 text-white" style="background-color:  #e27a23">
+                            <tr>
+                                <th class="py-3 px-6 text-left">Sản phẩm</th>
+                                <th class="py-3 px-6 text-right">Giá</th>
+                                <th class="py-3 px-6 text-right">Số lượng</th>
+                                <th class="py-3 px-6 text-right">Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.ChiTietDonHangs)
+                            {
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="py-3 px-6">@item.SanPham.TenSanPham</td>
+                                    <td class="py-3 px-6 text-right">@item.Gia.ToString("N0") VND</td>
+                                    <td class="py-3 px-6 text-right">@item.SoLuong</td>
+                                    <td class="py-3 px-6 text-right">@((item.Gia * item.SoLuong).ToString("N0")) VND</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Final Summary -->
+            <div class="mt-10 bg-gray-100 p-6 rounded-lg shadow-md">
+                <div class="flex justify-between text-gray-600 text-lg">
+                    <span>Tổng cộng:</span>
+                    <span class="font-semibold text-gray-800">@ViewBag.DonHang.TongTien.ToString("N0") VND</span>
+                </div>
+                <div class="flex justify-between text-gray-600 text-lg mt-4">
+                    <span>Phí vận chuyển:</span>
+                    <span class="font-semibold text-gray-800">@ViewBag.PhiVanChuyen.ToString("N0") VND</span>
+                </div>
+                <div class="flex justify-between text-gray-600 text-lg mt-4">
+                    <span><strong>Tổng tiền:</strong></span>
+                    <span class="font-semibold text-gray-800 text-xl" style="color: #e27a23">@ViewBag.TongTienFinal.ToString("N0") VND</span>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="mt-8 text-center">
+                <p class="text-lg text-gray-600">Vui lòng kiểm tra email và điện thoại của bạn để nhận thông tin chi tiết về đơn hàng.</p>
+                <p class="mt-4 text-gray-600">Chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
+            </div>
+
+            <!-- Back to Home Button -->
+            <div class="mt-8 text-center"> 
+                <a href="/"  style="background-color: #e27a23"
+                class="inline-block px-6 py-3 mt-6 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg text-lg">
+                    Trở về trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

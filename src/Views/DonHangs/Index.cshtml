@@ -1,0 +1,84 @@
+﻿@model IEnumerable<WebHM.Models.DonHang>
+
+@{
+
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if (User.IsInRole("Seller"))
+    {
+        Layout = "~/Views/Shared/_SellerLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="max-w-screen-xl mx-auto py-8">
+    <h1 class="text-3xl text-center mt-100 font-semibold text-gray-900 mb-6">Danh sách đơn hàng của bạn</h1>
+    @if(User.IsInRole("Admin") || User.IsInRole("Seller"))
+    {
+
+        <p class="mb-4">
+            <a asp-action="Create" style="background-color: #e27a23" class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition duration-300">
+                Tạo đơn hàng mới
+            </a>
+        </p>
+    }
+
+    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
+        <table class="min-w-full table-auto border-collapse">
+            <thead class="bg-gray-100 text-gray-600">
+                <tr class="text-left">
+                    <th class="px-4 py-2">Chi tiết đơn hàng</th>
+                   @*  <th class="px-4 py-2">Cập nhật trạng thái</th> *@
+                    <th class="px-4 py-2">Địa chỉ giao hàng</th>
+                    <th class="px-4 py-2">Số điện thoại giao hàng</th>
+                    <th class="px-4 py-2">Ngày đặt hàng</th>
+                    <th class="px-4 py-2">Tổng tiền</th>
+                    <th class="px-4 py-2">Trạng thái</th>
+                    <th class="px-4 py-2">Khách hàng</th>
+                    <th class="px-4 py-2">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-4">
+                            <a asp-controller="ThanhToans" asp-action="XacNhanThanhToan" asp-route-maDonHang="@item.MaDonHang" class="text-blue-500 hover:underline">
+                                Xem chi tiết đơn hàng @item.MaDonHang
+                            </a>
+                        </td>
+                        
+                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.DiaChiGiaoHang)</td>
+                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.SoDienThoaiGiaoHang)</td>
+                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.NgayDatHang)</td>
+                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.TongTien)</td>
+                        <td class="px-4 py-4 text-gray-600 font-semibold">@Html.DisplayFor(modelItem => item.TrangThai)</td>
+                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.KhachHang.Id)</td>
+                        <td class="px-4 py-4 text-center space-x-2">
+                            <a asp-action="Edit" asp-route-id="@item.MaDonHang" class="text-yellow-500 hover:underline">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.MaDonHang" class="text-blue-500 hover:underline">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.MaDonHang" class="text-red-500 hover:underline">Delete</a>
+                        </td>
+                        <td class="px-4 py-4">
+                            @if (User.IsInRole("Seller") && item.TrangThai != "Đã giao" &&
+                           item.TrangThai != "Hủy" && item.TrangThai != "Đã thanh toán")
+                            {
+                                <form action="@Url.Action("CapNhatTrangThai", "DonHangs")" method="post">
+                                    <input type="hidden" name="maDonHang" value="@item.MaDonHang" />
+                                    <button type="submit" class="w-full bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
+                                        Xác nhận
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

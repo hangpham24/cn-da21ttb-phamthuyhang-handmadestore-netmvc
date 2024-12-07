@@ -1,0 +1,57 @@
+﻿@model WebHM.Models.Momo.PaymentCallback
+
+<h2>Thông tin thanh toán</h2>
+<table class="table table-bordered">
+    <tr>
+        <th>Partner Code</th>
+        <td>@Model.PartnerCode</td>
+    </tr>
+    <tr>
+        <th>Access Key</th>
+        <td>@Model.AccessKey</td>
+    </tr>
+    <tr>
+        <th>Request ID</th>
+        <td>@Model.RequestId</td>
+    </tr>
+    <tr>
+        <th>Amount</th>
+        <td>@Model.Amount</td>
+    </tr>
+    <tr>
+        <th>Order ID</th>
+        <td>@Model.OrderId</td>
+    </tr>
+    <tr>
+        <th>Order Info</th>
+        <td>@Model.OrderInfo</td>
+    </tr>
+    <tr>
+        <th>Message</th>
+        <td>@Model.Message</td>
+    </tr>
+    <tr>
+        <th>Local Message</th>
+        <td>@Model.LocalMessage</td>
+    </tr>
+    <tr>
+        <th>Response Time</th>
+        <td>@Model.ResponseTime</td>
+    </tr>
+    <tr>
+        <th>Error Code</th>
+        <td>@Model.ErrorCode</td>
+    </tr>
+    <tr>
+        <th>Pay Type</th>
+        <td>@Model.PayType</td>
+    </tr>
+    <tr>
+        <th>Extra Data</th>
+        <td>@Model.ExtraData</td>
+    </tr>
+    <tr>
+        <th>Signature</th>
+        <td>@Model.Signature</td>
+    </tr>
+</table>

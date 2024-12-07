@@ -1,0 +1,133 @@
+﻿@using WebHM.Services
+@model IEnumerable<WebHM.Models.GioHang>
+
+@{
+    ViewData["Title"] = "Thanh Toán";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if (User.IsInRole("Seller"))
+    {
+        Layout = "~/Views/Shared/_SellerLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
+<script>
+    // JavaScript function to change form action based on payment method
+    function changeFormAction() {
+        var form = document.getElementById("paymentForm");
+        var paymentMethod = document.querySelector('input[name="PhuongThuc"]:checked').value;
+
+        if (paymentMethod === "Momo") {
+            form.action = '@Url.Action("CreatePaymentMomo", "Payment")';
+        } else {
+            form.action = '@Url.Action("ThanhToan", "ThanhToans")';
+        }
+    }
+</script>
+
+<style>
+    .bg-main-color {
+        background-color: #f28123;
+    }
+
+    .text-main-color {
+        color: #f28123;
+    }
+</style>
+
+<h2 class="text-5xl font-bold text-main-color text-center mt-10">Thanh Toán</h2>
+
+
+<!-- Form thanh toán -->
+<form id="paymentForm" method="post" action="@Url.Action("ThanhToan", "ThanhToans")" onsubmit="changeFormAction()">
+    <!-- Grid container -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8" style="margin-top: 30px; margin-bottom: 90px">
+        <!-- Phần thông tin thanh toán -->
+        <div class="bg-white shadow-lg rounded-lg p-8">
+            <h2 class="text-2xl font-bold text-main-color mb-6">Thông Tin Thanh Toán</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700" for="phone">Người nhận</label>
+                    <input type="text" name="FullName" id="nguoinhan" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Nhập tên người nhận" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700" for="address">Địa chỉ</label>
+                    <input type="text" name="DiaChi" id="address" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Nhập địa chỉ" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700" for="phone">Số điện thoại</label>
+                    <input type="tel" name="SoDienThoai" id="phone" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Nhập số điện thoại" required>
+                </div>
+
+                <!-- Phần chọn phương thức thanh toán -->
+                <div>
+                    <h2 class="text-2xl font-bold text-main-color mt-10 mb-6">Phương thức thanh toán</h2>
+                    <div class="mt-2">
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="radio" name="PhuongThuc" value="Momo" class="text-main-color" required>
+                            <label for="momo" class="text-gray-700">Momo</label>
+                        </div>
+                        <div class="flex items-center space-x-4 mt-2">
+                            <input type="radio" name="PhuongThuc" value="COD" class="text-main-color" required>
+                            <label for="chuyenkhoan" class="text-gray-700">Thanh toán khi nhận hàng (COD)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phần thông tin đơn hàng -->
+        <div class="bg-white shadow-lg rounded-lg p-8">
+            <h2 class="text-2xl font-bold text-main-color mb-6">Thông Tin Đơn Hàng</h2>
+            <div>
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="py-2 text-left text-gray-700">Sản phẩm</th>
+                            <th class="py-2 text-right text-gray-700">Giá</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var i in ViewBag.ListSanPham)
+                        {
+                            <tr class="border-b">
+                                <td class="py-2">@i.SanPham.TenSanPham</td>
+                                <td class="py-2 text-right">@ChuyenTienTe.Dec2VND(i.SanPham.Gia)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <input type="hidden" name="FullName" value="Phạm Thúy Hằng">
+                <input type="hidden" name="OrderInformation" value="Thanh toán đơn hàng tại HandMade Store">
+                <input type="hidden" name="OrderId" value="@DateTime.UtcNow.Ticks.ToString()">
+                <input type="hidden" name="Amount" value="@(Convert.ToInt32(ViewBag.TongTien) + 25000)">
+    
+                <div class="mt-4 border-t pt-4">
+                    <div class="flex justify-between text-gray-700">
+                        <span>Tổng cộng:</span>
+                        <span class="font-bold">@ChuyenTienTe.Dec2VND(ViewBag.TongTien)</span>
+                    </div>
+                    <div class="flex justify-between text-gray-700 mt-2">
+                        <span>Phí vận chuyển:</span>
+                        <span class="font-bold">25,000 VND</span>
+                    </div>
+                    <div class="flex justify-between text-gray-700 mt-2">
+                        <span><strong>Tổng tiền:</strong></span>
+                        <span class="font-bold text-main-color">@ChuyenTienTe.Dec2VND((ViewBag.TongTien + 25000))</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <button type="submit" name="PayUrl" class="w-full bg-main-color text-white py-3 rounded-md hover:bg-orange-600 transition duration-300">Đặt hàng</button>
+            </div>
+        </div>
+    </div>
+</form>

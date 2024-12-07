@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Giỏ Hàng Trống";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="cart-empty-message text-center">
+    <h3>Your cart is empty</h3>
+    <a href="/SanPhams" class="boxed-btn black">Tiếp tục mua sản phẩm</a>
+</div>

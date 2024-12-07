@@ -1,0 +1,141 @@
+﻿@using WebHM.Services
+@model PaginatedList<dynamic>
+
+<h1>@ViewData["Title"]</h1>
+@{
+
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if (User.IsInRole("Seller"))
+    {
+        Layout = "~/Views/Shared/_SellerLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+<!-- Form lọc người bán, tháng, năm, và danh mục sản phẩm -->
+<form method="get">
+    <div class="row">
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col-md-3">
+                <label for="nguoiBanId">Chọn người bán:</label>
+                <select name="nguoiBanId" class="form-control">
+                    <option value="">Tất cả</option>
+                    @foreach (var nguoiBan in ViewData["NguoiBans"] as List<ApplicationUser>)
+                    {
+                        <option value="@nguoiBan.Id">@nguoiBan.UserName</option>
+                    }
+                </select>
+            </div>
+        }
+        <div class="col-md-3">
+            <label for="danhMucId">Chọn danh mục sản phẩm:</label>
+            <select name="danhMucId" class="form-control">
+                <option value="">Tất cả</option>
+                @foreach (var danhMuc in ViewData["DanhMucs"] as List<DanhMuc>)
+                {
+                    <option value="@danhMuc.MaDanhMuc">@danhMuc.TenDanhMuc</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="thang">Chọn tháng:</label>
+            <select name="thang" class="form-control">
+                <option value="">Tất cả</option>
+                <option value="0">Tháng này</option>
+                @for (int i = 1; i <= 12; i++)
+                {
+                    <option value="@i">@i</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="nam">Chọn năm:</label>
+            <select name="nam" class="form-control">
+                <option value="">Tất cả</option>
+                <option value="0">Năm nay</option>
+                @for (int i = 2020; i <= DateTime.Now.Year; i++)
+                {
+                    <option value="@i">@i</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Thống kê</button>
+    </div>
+</form>
+
+<!-- Bảng dữ liệu -->
+<table class="table table-bordered mt-4">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Mã đơn hàng</th>
+            <th>Ngày đặt hàng</th>
+            <th>Khách hàng</th>
+            <th>Sản phẩm</th>
+            <th>Danh mục sản phẩm</th>
+            <th>Số lượng bán</th>
+            <th>Tổng tiền</th>
+            <th>Số lượng bị hủy</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@(Model.Items.IndexOf(item) + 1)</td>
+                <td>@item.DonHang.MaDonHang</td>
+                <td>@item.DonHang.NgayDatHang.ToString("dd/MM/yyyy")</td>
+                <td>@item.DonHang.KhachHang.UserName</td>
+                <td>@string.Join(", ", item.SanPhamTen)</td>
+                <td>@item.DanhMucTen</td>
+                <td>@item.SoLuongDonHang</td>
+                <td>@ChuyenTienTe.Dec2VND(item.TongTien)</td>
+                <td>@item.SoLuongHuy</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<!-- Pagination -->
+<div class="row">
+    <div class="col-lg-12 text-center">
+        <div class="pagination-wrap">
+            <ul>
+                <!-- Trước -->
+                @if (ViewBag.HasPreviousPage)
+                {
+                    <li><a href="@Url.Action("ThongKeDoanhSo", new { nguoiBanId = ViewBag.NguoiBanId, thang = ViewBag.Thang, nam = ViewBag.Nam, pageIndex = ViewBag.PageIndex - 1 })">Trước</a></li>
+                }
+                else
+                {
+                    <li class="disabled"><a href="#">Trước</a></li>
+                }
+
+                <!-- Các trang -->
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="@(i == ViewBag.PageIndex ? "active" : "")">
+                        <a href="@Url.Action("ThongKeDoanhSo", new { nguoiBanId = ViewBag.NguoiBanId, thang = ViewBag.Thang, nam = ViewBag.Nam, pageIndex = i })">@i</a>
+                    </li>
+                }
+
+                <!-- Sau -->
+                @if (ViewBag.HasNextPage)
+                {
+                    <li><a href="@Url.Action("ThongKeDoanhSo", new { nguoiBanId = ViewBag.NguoiBanId, thang = ViewBag.Thang, nam = ViewBag.Nam, pageIndex = ViewBag.PageIndex + 1 })">Sau</a></li>
+                }
+                else
+                {
+                    <li class="disabled"><a href="#">Sau</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

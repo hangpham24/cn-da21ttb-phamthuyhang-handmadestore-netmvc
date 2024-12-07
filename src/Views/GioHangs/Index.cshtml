@@ -1,0 +1,231 @@
+﻿@using System.Security.Claims
+@using WebHM.Services
+@model IEnumerable<WebHM.Models.GioHang>
+
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+<!-- Thêm Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<!-- cart -->
+<div class="cart-section mt-150 mb-150">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <div class="cart-table-wrap">
+                    <form method="post" action="@Url.Action("UpdateCart", "GioHangs")">
+                        <!-- Thêm lớp table-responsive -->
+                        <div class="table-responsive">
+                            <table class="cart-table" style="width: 100%; text-align: center;">
+                                <thead class="cart-table-head">
+                                    <tr class="table-head-row">
+                                        <th class="product-remove">Xóa</th>
+                                        <th class="product-image-name">Sản phẩm</th>
+                                        <th class="product-price">Giá</th>
+                                        <th class="product-quantity">Số lượng</th>
+                                        <th class="product-total">Tổng tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="table-body-row">
+                                            <td class="product-remove">
+                                                <a asp-action="RemoveFromCart" asp-route-id="@item.MaGioHang" class="text-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                            <td class="product-image-name" style="display: flex; justify-content: center; align-items: center; text-align: center;">
+                                                <img src="@item.SanPham.HinhAnh" alt="" style="width: 50px; height: 50px; margin-right: 10px; border-radius:10px" />
+                                                @item.SanPham.TenSanPham
+                                            </td>
+                                            <td class="product-price">@ChuyenTienTe.Dec2VND(item.SanPham.Gia)</td>
+                                            <td class="product-quantity">
+                                                <input type="number" name="soLuong[@item.MaGioHang]" value="@item.SoLuong" min="1" style="text-align: center;" />
+                                            </td>
+                                            <td class="product-total">@ChuyenTienTe.Dec2VND(item.SoLuong * item.SanPham.Gia)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-content-around">
+                            <div class="cart-buttons" style="text-align: center;">
+                                
+                                <button type="submit" class="boxed-btn black"><i class="fas fa-sync text-black hover:text-white"></i> Làm mới</button>
+                            </div>
+                            <div class="cart-buttons" style="text-align: center;">
+                                <a href="/SanPhams" class="boxed-btn black"> <i class="fas fa-shopping-cart"></i> Tiếp tục mua</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+                <div class="total-section">
+                    <table class="total-table" style="width: 100%;">
+                        <thead class="total-table-head">
+                            <tr class="table-total-row">
+                                <th>Tổng cộng</th>
+                                <th>Giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="total-data">
+                                <td><strong>Tổng: </strong></td>
+                                <td>@ChuyenTienTe.Dec2VND(Model.Sum(item => item.SoLuong * item.SanPham.Gia))</td>
+                            </tr>
+                            <tr class="total-data">
+                                <td><strong>Phí vận chuyển: </strong></td>
+                                <td>25,000 VND</td>
+                            </tr>
+                            <tr class="total-data">
+                                <td><strong>Thành tiền: </strong></td>
+                                @if (!Model.Any())
+                                {
+                                    <td>
+                                        0 VND
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        @ChuyenTienTe.Dec2VND(Model.Sum(item => item.SoLuong * item.SanPham.Gia) + 25000)
+                                    </td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="cart-buttons" style="text-align: center;">
+                        <a href="/DonHangs/ThanhToan" class="boxed-btn black">Thanh toán</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end cart -->
+
+
+
+<style>
+    /* Thêm khả năng cuộn ngang cho bảng */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Kích hoạt cuộn mượt */
+}
+
+.table-responsive table {
+    min-width: 600px; /* Đặt chiều rộng tối thiểu cho bảng */
+    border-collapse: collapse;
+}
+
+/* Tùy chỉnh bảng */
+.cart-table th,
+.cart-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Responsive */
+@@media (max-width: 768px) {
+    .cart-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        font-size: 14px; /* Giảm kích thước chữ trên màn hình nhỏ */
+    }
+}
+
+    .boxed-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        text-align: center;
+        border: 2px solid transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .boxed-btn.black {
+            background-color: #fff;
+            color: #f18023;
+            border-color: #f18023;
+        }
+
+            .boxed-btn.black:hover {
+                background-color: #f18023;
+                color: #fff;
+                border-color: #f18023;
+            }
+
+    .remove-btn {
+        border: none;
+        background: none;
+        color: red;
+        cursor: pointer;
+    }
+</style>
+
+@* <h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SoLuong)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.KhachHang)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SanPham)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoLuong)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.KhachHang.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SanPham.TenSanPham)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MaGioHang">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MaGioHang">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MaGioHang">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+ *@
