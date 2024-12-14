@@ -17,6 +17,7 @@ namespace WebHM.Models
         public string MoTa { get; set; }
 
         public string HinhAnh { get; set; }
+        public int SoLuongTon { get; set; }
 
         public int MaDanhMuc { get; set; }
         public DanhMuc DanhMuc { get; set; }
