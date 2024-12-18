@@ -1,4 +1,5 @@
-﻿@using WebHM.Services;
+﻿@using Microsoft.AspNetCore.Identity
+@using WebHM.Services;
 @model PaginatedList<ApplicationUser>
 
 @{
@@ -35,8 +36,11 @@
                 <td class="border border-gray-300 px-4 py-2">@user.UserName</td>
                 <td class="border border-gray-300 px-4 py-2">@user.Email</td>
                 <td class="border border-gray-300 px-4 py-2">
-                    @* Nếu có nhiều vai trò, hiển thị chúng *@
-                    @* @(string.Join(", ", (await _userManager.GetRolesAsync(user)))) *@
+                    @* Hiển thị vai trò từ ViewBag *@
+                    @if (ViewBag.UserRoles != null && ViewBag.UserRoles.ContainsKey(user.Id))
+                    {
+                        @ViewBag.UserRoles[user.Id]
+                    }
                 </td>
                 <td class="border border-gray-300 px-4 py-2">
                     <a asp-action="Edit" asp-route-id="@user.Id" class="text-blue-500 hover:underline">Chỉnh sửa</a> |

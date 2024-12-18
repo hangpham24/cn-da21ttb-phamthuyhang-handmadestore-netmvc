@@ -1,5 +1,4 @@
-﻿
-@using System.Collections.Generic;
+﻿@using System.Collections.Generic;
 @using WebHM.Services
 @model WebHM.Models.ViewModel.VM_TrangChuNguoiBan
 @{
@@ -65,13 +64,18 @@
     <div class="bg-white p-4 rounded-lg shadow-md mb-6">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Đơn hàng đang chờ xử lý</h2>
         <ul class="divide-y divide-gray-200">
-        @foreach(var dh in Model.DonHangChoXuLy)
-        {        
-            <li class="py-2 flex justify-between">
-                <span class="text-gray-700">Đơn hàng #@dh.OrderId</span>
-                <span class="text-blue-500">@dh.TrangThai</span>
-            </li>
-        }
+            @foreach (var dh in Model.DonHangChoXuLy)
+            {
+                <li class="py-2 flex justify-between">
+                    <span class="text-gray-700">
+                        Đơn hàng
+                        <a href="/DonHangs?searchString=@dh.OrderId">
+                            #@dh.OrderId
+                        </a>
+                    </span>
+                    <span class="text-blue-500">@dh.TrangThai</span>
+                </li>
+            }
         </ul>
     </div>
 
@@ -123,6 +127,15 @@
                 plugins: {
                     legend: {
                         position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            // Tùy chỉnh nội dung tooltip khi hover
+                            label: function (tooltipItem) {
+                                // Định dạng giá trị doanh thu dưới dạng tiền tệ VNĐ
+                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tooltipItem.raw);
+                            }
+                        }
                     }
                 }
             }

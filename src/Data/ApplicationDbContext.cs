@@ -10,15 +10,14 @@ namespace WebHM.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         // Khai báo DbSet cho các thực thể
-        public DbSet<VanChuyen> VanChuyens { get; set; }
-        public DbSet<DonHangVanChuyen> DonHangVanChuyens { get; set; }
+/*        public DbSet<VanChuyen> VanChuyens { get; set; }
+        public DbSet<DonHangVanChuyen> DonHangVanChuyens { get; set; }*/
         public DbSet<DanhMuc> DanhMucs { get; set; }
         public DbSet<SanPham> SanPhams { get; set; }
         public DbSet<DonHang> DonHangs { get; set; }
         public DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
-/*        public DbSet<DanhGia> DanhGias { get; set; }*/
         public DbSet<BinhLuan> BinhLuans { get; set; }
-        public DbSet<ThongKeDoanhSo> ThongKeDoanhSos { get; set; }
+/*        public DbSet<ThongKeDoanhSo> ThongKeDoanhSos { get; set; }*/
         public DbSet<GioHang> GioHangs { get; set; }
         public DbSet<ThanhToan> ThanhToans { get; set; }
         public DbSet<LichSuThanhToan> LichSuThanhToans { get; set; }
@@ -33,7 +32,7 @@ namespace WebHM.Data
             base.OnModelCreating(builder);
 
             // Cấu hình cho DonHangVanChuyen
-            builder.Entity<DonHangVanChuyen>(entity =>
+/*            builder.Entity<DonHangVanChuyen>(entity =>
             {
                 entity.HasKey(dhvc => dhvc.Id);
 
@@ -53,9 +52,9 @@ namespace WebHM.Data
                     .WithMany()
                     .HasForeignKey(dhvc => dhvc.MaVanChuyen)
                     .OnDelete(DeleteBehavior.Restrict);
-            });
+            });*/
 
-            // Cấu hình cho VanChuyen
+/*            // Cấu hình cho VanChuyen
             builder.Entity<VanChuyen>(entity =>
             {
                 entity.HasKey(vc => vc.MaVanChuyen);
@@ -68,7 +67,7 @@ namespace WebHM.Data
                     .IsRequired()
                     .HasColumnType("decimal(18,2)")
                     .HasDefaultValue(0);
-            });
+            });*/
 
             // Cấu hình cho SanPham
             builder.Entity<SanPham>()
@@ -136,18 +135,18 @@ namespace WebHM.Data
                 .WithMany(s => s.GioHangs)
                 .HasForeignKey(g => g.MaSanPham);
 
-            // Cấu hình cho ThongKeDoanhSo
+  /*          // Cấu hình cho ThongKeDoanhSo
             builder.Entity<ThongKeDoanhSo>()
                 .HasOne(t => t.NguoiBan)
                 .WithMany()
                 .HasForeignKey(t => t.NguoiBanId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<ThongKeDoanhSo>()
+*/
+/*            builder.Entity<ThongKeDoanhSo>()
                 .HasOne(t => t.SanPham)
                 .WithMany(s => s.ThongKeDoanhSos)
                 .HasForeignKey(t => t.MaSanPham);
-
+*/
             // Cấu hình cho ThanhToan
             builder.Entity<ThanhToan>()
                 .HasOne(t => t.DonHang)

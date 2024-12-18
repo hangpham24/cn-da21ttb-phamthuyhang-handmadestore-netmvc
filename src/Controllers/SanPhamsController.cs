@@ -181,7 +181,7 @@ namespace WebHM.Controllers
         [Authorize(Roles = "Admin,Seller")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MaSanPham,TenSanPham,Gia,MoTa,HinhAnh,MaDanhMuc,NguoiBanId")] SanPham sanPham, IFormFile HinhAnh)
+        public async Task<IActionResult> Create([Bind("MaSanPham,TenSanPham,Gia,MoTa,HinhAnh,MaDanhMuc,NguoiBanId, SoLuongTon")] SanPham sanPham, IFormFile HinhAnh)
         {
             if (HinhAnh != null && HinhAnh.Length > 0)
             {
@@ -248,7 +248,7 @@ namespace WebHM.Controllers
         [Authorize(Roles = "Admin,Seller")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MaSanPham,TenSanPham,Gia,MoTa,HinhAnh,MaDanhMuc,NguoiBanId")] SanPham sanPham, IFormFile newImage)
+        public async Task<IActionResult> Edit(int id, [Bind("MaSanPham,TenSanPham,Gia,MoTa,HinhAnh,MaDanhMuc,NguoiBanId, SoLuongTon")] SanPham sanPham, IFormFile newImage)
         {
             if (id != sanPham.MaSanPham)
             {

@@ -1,84 +1,221 @@
-﻿@model IEnumerable<WebHM.Models.DonHang>
+﻿@using WebHM.Services
+@model PaginatedList<WebHM.Models.DonHang>
 
-@{
-
-    if (User.IsInRole("Admin"))
-    {
-        Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    }
-    else if (User.IsInRole("Seller"))
-    {
-        Layout = "~/Views/Shared/_SellerLayout.cshtml";
-    }
-    else
-    {
-        Layout = "~/Views/Shared/_Layout.cshtml";
-    }
+@if (User.IsInRole("Admin"))
+{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+else if (User.IsInRole("Seller"))
+{
+    Layout = "~/Views/Shared/_SellerLayout.cshtml";
+}
+else
+{
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="max-w-screen-xl mx-auto py-8">
-    <h1 class="text-3xl text-center mt-100 font-semibold text-gray-900 mb-6">Danh sách đơn hàng của bạn</h1>
-    @if(User.IsInRole("Admin") || User.IsInRole("Seller"))
-    {
+<section class="mt-10">
+    <div class="md:p-5 sm:p-3">
+        <!-- Form tìm kiếm -->
+        <form method="GET" asp-action="Index" class="mb-6">
+            <label for="search" class="block text-sm font-medium text-gray-900 dark:text-white">Tìm kiếm đơn hàng</label>
+            <input type="text"
+                   id="search"
+                   name="searchString"
+                   placeholder="Tìm kiếm đơn hàng"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   value="@ViewData["CurrentFilter"]" />
+            <button type="submit" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tìm kiếm</button>
+            <a asp-action="Create" type="button" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo mới</a>
+        </form>
+        <!-- Bảng danh sách đơn hàng -->
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table id="export-table" class="min-w-full table-auto text-sm text-left text-gray-500 dark:text-gray-300">
+                <thead class="bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                    <tr>
+                        <th class="py-3 px-6">Mã đơn hàng</th>
+                        <th class="py-3 px-6">Tên người nhận</th>
+                        <th class="py-3 px-6">Số điện thoại</th>
+                        <th class="py-3 px-6">Ngày đặt hàng</th>
+                        <th class="py-3 px-6">Trạng thái</th>
+                        @if (User.IsInRole("Seller"))
+                        {
+                            <th class="text-center py-3 px-6"></th>
+                            <th class="text-center py-3 px-6" colspan="3">Hành động</th> <!-- Gộp hai cột hành động thành một -->
+                            <th class="text-center py-3 px-6"></th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr id="row-@item.MaDonHang" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td class="py-3 px-6">
+                                    @if (User.IsInRole("Seller") || User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Details" asp-route-id="@item.MaDonHang" class="text-blue-500 hover:text-blue-600 font-semibold transition-all duration-300">#@item.OrderId</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="ThanhToans" asp-action="XacNhanThanhToan" asp-route-maDonHang="@item.MaDonHang" class="text-blue-500 hover:underline">
+                                            #@item.OrderId
+                                        </a>
+                                    }
+                                </td>
 
-        <p class="mb-4">
-            <a asp-action="Create" style="background-color: #e27a23" class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition duration-300">
-                Tạo đơn hàng mới
-            </a>
-        </p>
+                                <td class="py-3 px-6">@item.NguoiNhan</td>
+                                <td class="py-3 px-6">@item.SoDienThoaiGiaoHang</td>
+                                <td class="py-3 px-6">@item.NgayDatHang.ToString("dd/MM/yyyy")</td>
+                                <td class="px-6 py-3">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded
+                                    @(item.TrangThai == "Đã giao" ? "bg-green-200 text-green-800"
+                                    : item.TrangThai == "Đã thanh toán" ? "bg-blue-200 text-blue-800"
+                                    : item.TrangThai == "Đã xác nhận" ? "bg-purple-200 text-purple-800"
+                                    : item.TrangThai == "Hủy" ? "bg-red-200 text-red-800"
+                                    : "bg-yellow-200 text-yellow-800")">
+                                        @Html.DisplayFor(modelItem => item.TrangThai)
+                                    </span>
+                                </td>
+                                @if (User.IsInRole("Seller"))
+                                {
+
+                                    <td class="px-4 py-4 text-center">
+                                        @if (User.IsInRole("Seller") && item.TrangThai != "Đã giao" && item.TrangThai != "Hủy")
+                                        {
+                                            <form action="@Url.Action("CapNhatTrangThai", "DonHangs")" method="post">
+                                                <input type="hidden" name="maDonHang" value="@item.MaDonHang" />
+                                                @if (item.TrangThai == "Chờ xử lý")
+                                                {
+                                                    <button type="submit" class="w-full bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+
+                                                        Xác nhận đơn
+
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="submit" class="w-full bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
+
+                                                        Đã giao
+
+                                                    </button>
+
+                                                }
+                                            </form>
+                                        }
+                                    </td>
+                                    <td colspan="2" class="py-3 px-6 text-center">
+                                        <a asp-action="Edit" asp-route-id="@item.MaDonHang" class="px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg shadow-md transition duration-200 w-full sm:w-auto">Sửa</a>
+
+                                    </td>
+                                    <td>
+                                        <button class="delete-button px-4  py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-md transition duration-200 w-full sm:w-auto"
+                                                data-id="@item.MaDonHang">
+                                            Xóa
+                                        </button>
+                                    </td>
+                                }
+                                
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4">Không có dữ liệu</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-4 text-center">
+            <div class="pagination-wrap">
+                <ul class="flex justify-center gap-2">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", new { pageIndex = Model.PageIndex - 1, query = ViewBag.SearchQuery })" class="text-blue-600 hover:text-blue-800">Trước</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="text-gray-400">Trước</li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="@(i == Model.PageIndex ? "font-bold text-blue-600" : "")">
+                            <a href="@Url.Action("Index", new { pageIndex = i, query = ViewBag.SearchQuery })" class="hover:text-blue-800">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", new { pageIndex = Model.PageIndex + 1, query = ViewBag.SearchQuery })" class="text-blue-600 hover:text-blue-800">Sau</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="text-gray-400">Sau</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const deleteButtons = document.querySelectorAll(".delete-button");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const donHangId = this.getAttribute("data-id");
+
+                if (confirm("Bạn có chắc chắn muốn xóa không?")) {
+                    fetch(`/DonHangs/DeleteConfirmed/${donHangId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                document.getElementById(`row-${donHangId}`).remove();
+                            } else {
+                                alert("Có lỗi xảy ra khi xóa!");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi:", error);
+                            alert("Không thể xóa mục này.");
+                        });
+                }
+            });
+        });
+    });
+</script>
+<style>
+    table {
+        table-layout: auto; /* Điều chỉnh chiều rộng của bảng tự động */
+        width: 100%;
+        overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
     }
 
-    <div class="overflow-x-auto bg-white shadow-lg rounded-lg">
-        <table class="min-w-full table-auto border-collapse">
-            <thead class="bg-gray-100 text-gray-600">
-                <tr class="text-left">
-                    <th class="px-4 py-2">Chi tiết đơn hàng</th>
-                   @*  <th class="px-4 py-2">Cập nhật trạng thái</th> *@
-                    <th class="px-4 py-2">Địa chỉ giao hàng</th>
-                    <th class="px-4 py-2">Số điện thoại giao hàng</th>
-                    <th class="px-4 py-2">Ngày đặt hàng</th>
-                    <th class="px-4 py-2">Tổng tiền</th>
-                    <th class="px-4 py-2">Trạng thái</th>
-                    <th class="px-4 py-2">Khách hàng</th>
-                    <th class="px-4 py-2">Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="px-4 py-4">
-                            <a asp-controller="ThanhToans" asp-action="XacNhanThanhToan" asp-route-maDonHang="@item.MaDonHang" class="text-blue-500 hover:underline">
-                                Xem chi tiết đơn hàng @item.MaDonHang
-                            </a>
-                        </td>
-                        
-                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.DiaChiGiaoHang)</td>
-                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.SoDienThoaiGiaoHang)</td>
-                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.NgayDatHang)</td>
-                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.TongTien)</td>
-                        <td class="px-4 py-4 text-gray-600 font-semibold">@Html.DisplayFor(modelItem => item.TrangThai)</td>
-                        <td class="px-4 py-4">@Html.DisplayFor(modelItem => item.KhachHang.Id)</td>
-                        <td class="px-4 py-4 text-center space-x-2">
-                            <a asp-action="Edit" asp-route-id="@item.MaDonHang" class="text-yellow-500 hover:underline">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.MaDonHang" class="text-blue-500 hover:underline">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.MaDonHang" class="text-red-500 hover:underline">Delete</a>
-                        </td>
-                        <td class="px-4 py-4">
-                            @if (User.IsInRole("Seller") && item.TrangThai != "Đã giao" &&
-                           item.TrangThai != "Hủy" && item.TrangThai != "Đã thanh toán")
-                            {
-                                <form action="@Url.Action("CapNhatTrangThai", "DonHangs")" method="post">
-                                    <input type="hidden" name="maDonHang" value="@item.MaDonHang" />
-                                    <button type="submit" class="w-full bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300">
-                                        Xác nhận
-                                    </button>
-                                </form>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
+    th, td {
+        white-space: nowrap; /* Ngừng xuống dòng */
+        overflow: hidden; /* Ẩn phần vượt quá */
+        text-overflow: ellipsis; /* Hiển thị dấu ba chấm nếu nội dung bị cắt */
+    }
+
+    td {
+        overflow-x: auto; /* Hiển thị thanh cuộn nếu nội dung dài */
+    }
+
+</style>

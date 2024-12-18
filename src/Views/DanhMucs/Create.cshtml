@@ -1,0 +1,53 @@
+﻿@model WebHM.Models.DanhMuc
+
+@{
+    ViewData["Title"] = "Create";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else if(User.IsInRole("Seller"))
+    {
+        Layout = "~/Views/Shared/_SellerLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<h1 class="text-2xl text-center mt-100 font-semibold mb-4">Tạo Danh Mục Mới</h1>
+
+<div class="flex justify-center p-4">
+    <div class="w-full max-w-lg">
+        <form asp-action="Create" class="space-y-4">
+            <div asp-validation-summary="ModelOnly" class="text-red-500 mb-4"></div>
+
+            <div class="form-group">
+                <label asp-for="TenDanhMuc" class="block text-sm font-medium text-gray-700">Tên Danh Mục</label>
+                <input asp-for="TenDanhMuc" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="TenDanhMuc" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="MoTa" class="block text-sm font-medium text-gray-700">Mô Tả</label>
+                <textarea asp-for="MoTa" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <span asp-validation-for="MoTa" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Tạo" class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-4 text-center">
+    <a asp-action="Index" class="text-blue-600 hover:underline">Quay lại danh sách</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

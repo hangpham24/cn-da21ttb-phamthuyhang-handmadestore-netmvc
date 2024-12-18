@@ -1,68 +1,146 @@
-﻿@model IEnumerable<WebHM.Models.BinhLuan>
+﻿@using WebHM.Services
+@model PaginatedList<WebHM.Models.BinhLuan>
 
-@{
-    ViewData["Title"] = "Index";
-    if (User.IsInRole("Admin"))
-    {
-        Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    }
-    else
-    {
-
-        Layout = "~/Views/Shared/_Layout.cshtml";
-    }
+@if (User.IsInRole("Admin"))
+{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DiemDanhGia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NoiDungBinhLuan)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NgayBinhLuan)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SanPham)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.KhachHang)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DiemDanhGia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NoiDungBinhLuan)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NgayBinhLuan)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SanPham.TenSanPham)
-            </td>
-            <td>
-                    @(item.KhachHang.HoTen ?? item.KhachHang.TenCuaHang ?? item.KhachHang.UserName.Split("@")[0])
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.MaBinhLuan">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MaBinhLuan">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MaBinhLuan">Delete</a>
-            </td>
-        </tr>
+else if (User.IsInRole("Seller"))
+{
+    Layout = "~/Views/Shared/_SellerLayout.cshtml";
 }
-    </tbody>
-</table>
+else
+{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Thêm Font Awesome vào head -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<style>
+    .fas.fa-star {
+        color: #fbbf24; /* Màu vàng */
+        font-size: 1.2rem; /* Kích thước sao */
+    }
+
+    .far.fa-star {
+        color: #d1d5db; /* Màu xám cho sao rỗng */
+    }
+    table {
+        table-layout: auto; /* Điều chỉnh chiều rộng của bảng tự động */
+        width: 100%;
+        overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
+    }
+
+    th, td {
+        white-space: nowrap; /* Ngừng xuống dòng */
+        overflow: hidden; /* Ẩn phần vượt quá */
+        text-overflow: ellipsis; /* Hiển thị dấu ba chấm nếu nội dung bị cắt */
+    }
+
+    td {
+        overflow-x: auto; /* Hiển thị thanh cuộn nếu nội dung dài */
+    }
+</style>
+<section class="mt-10">
+    <!-- Form tìm kiếm -->
+    <form method="GET" asp-action="Index" class="mb-6">
+        <label for="search" class="block text-sm font-medium text-gray-900 dark:text-white">Tìm kiếm bình luận</label>
+        <input type="text"
+               id="search"
+               name="searchString"
+               placeholder="Tìm kiếm"
+               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+               value="@ViewBag.SearchQuery" />
+        <button type="submit" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tìm kiếm</button>
+    </form>
+
+    <!-- Bảng danh sách bình luận -->
+    <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+        <table class="min-w-full table-auto text-sm text-left text-gray-500 dark:text-gray-300">
+            <thead class="bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                <tr>
+                    <th class="py-3 px-6">Mã Bình luận</th>
+                    <th class="py-3 px-6">Tên khách hàng</th>
+                    <th class="py-3 px-6">Sản phẩm</th>
+                    <th class="py-3 px-6">Điểm đánh giá</th>
+                    <th class="py-3 px-6">Nội dung</th>
+                    <th class="py-3 px-6">Ngày bình luận</th>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Seller"))
+                    {
+                        <th class="py-3 px-6">Hành động</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Items.Any())
+                {
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="py-3 px-6">@item.MaBinhLuan</td>
+                            <td class="py-3 px-6">@item.KhachHang.HoTen</td>
+                            <td class="py-3 px-6">@item.SanPham.TenSanPham</td>
+                            <td class="py-3 px-6">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <span class="text-yellow-400 @(i <= item.DiemDanhGia ? "fas fa-star" : "far fa-star")"></span>
+                                }
+                            </td>
+                            <td class="py-3 px-6">@item.NoiDungBinhLuan</td>
+                            <td class="py-3 px-6">@item.NgayBinhLuan.ToString("dd/MM/yyyy")</td>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Seller"))
+                            {
+                                <td class="py-3 px-6">
+                                    <a href="@Url.Action("Edit", "BinhLuans", new { id = item.MaBinhLuan })" class="px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg shadow-md transition duration-200">Chỉnh sửa</a>
+                                    
+                                    <button data-id="@item.MaBinhLuan" class="delete-button px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-md transition duration-200">Xóa</button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-4">Không có dữ liệu</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phân trang -->
+    <div class="mt-4 text-center">
+        <div class="pagination-wrap">
+            <ul class="flex justify-center gap-2">
+                @if (Model.HasPreviousPage)
+                {
+                    <li>
+                        <a href="@Url.Action("Index", new { pageIndex = Model.PageIndex - 1, searchString = ViewBag.SearchQuery })" class="text-blue-600 hover:text-blue-800">Trước</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="text-gray-400">Trước</li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="@(i == Model.PageIndex ? "font-bold text-blue-600" : "")">
+                        <a href="@Url.Action("Index", new { pageIndex = i, searchString = ViewBag.SearchQuery })" class="hover:text-blue-800">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li>
+                        <a href="@Url.Action("Index", new { pageIndex = Model.PageIndex + 1, searchString = ViewBag.SearchQuery })" class="text-blue-600 hover:text-blue-800">Sau</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="text-gray-400">Sau</li>
+                }
+            </ul>
+        </div>
+    </div>
+</section>

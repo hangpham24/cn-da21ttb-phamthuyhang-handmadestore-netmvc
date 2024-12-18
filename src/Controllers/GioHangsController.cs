@@ -25,14 +25,29 @@ namespace WebHM.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] // Bảo vệ chống tấn công CSRF
         public async Task<IActionResult> ThemVaoGioHang(int sanPhamId, int soLuong)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Lấy User ID từ Claims của Identity
-            var sanPham = await _context.SanPhams.FindAsync(sanPhamId);
+            if (soLuong <= 0)
+            {
+                return Json(new { success = false, message = "Số lượng phải lớn hơn 0!" });
+            }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Lấy User ID từ Claims của Identity
+            if (userId == null)
+            {
+                return Json(new { success = false, message = "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!" });
+            }
+
+            var sanPham = await _context.SanPhams.FindAsync(sanPhamId);
             if (sanPham == null)
             {
                 return Json(new { success = false, message = "Sản phẩm không tồn tại!" });
+            }
+
+            if (sanPham.SoLuongTon < soLuong)
+            {
+                return Json(new { success = false, message = "Số lượng sản phẩm trong kho không đủ!" });
             }
 
             // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
@@ -43,6 +58,10 @@ namespace WebHM.Controllers
             {
                 // Cập nhật số lượng nếu sản phẩm đã có trong giỏ
                 gioHang.SoLuong += soLuong;
+                if (gioHang.SoLuong > sanPham.SoLuongTon)
+                {
+                    return Json(new { success = false, message = "Số lượng sản phẩm trong giỏ vượt quá tồn kho!" });
+                }
                 _context.Update(gioHang);
             }
             else
@@ -61,6 +80,7 @@ namespace WebHM.Controllers
 
             return Json(new { success = true, message = "Sản phẩm đã được thêm vào giỏ hàng!" });
         }
+
 
 
         // GET: Hiển thị giỏ hàng
@@ -86,15 +106,38 @@ namespace WebHM.Controllers
 
             foreach (var item in cartItems)
             {
+                // Kiểm tra nếu sản phẩm có trong giỏ hàng và số lượng yêu cầu trong form
                 if (soLuong.ContainsKey(item.MaGioHang))
                 {
-                    item.SoLuong = soLuong[item.MaGioHang];
+                    // Lấy thông tin sản phẩm từ bảng sản phẩm để kiểm tra số lượng tồn
+                    var sanPham = await _context.SanPhams
+                        .FirstOrDefaultAsync(p => p.MaSanPham == item.MaSanPham);
+
+                    if (sanPham != null)
+                    {
+                        // Kiểm tra số lượng yêu cầu có vượt quá số lượng tồn kho hay không
+                        if (soLuong[item.MaGioHang] > sanPham.SoLuongTon)
+                        {
+                            // Nếu vượt quá số lượng tồn, hiển thị thông báo lỗi
+                            TempData["ErrorMessage"] = $"Số lượng sản phẩm '{sanPham.TenSanPham}' không đủ trong kho.";
+                            return RedirectToAction(nameof(Index)); // Quay lại trang giỏ hàng
+                        }
+                        else
+                        {
+                            // Cập nhật lại số lượng giỏ hàng
+                            item.SoLuong = soLuong[item.MaGioHang];
+                        }
+                    }
                 }
             }
 
+            // Lưu thay đổi vào cơ sở dữ liệu
             await _context.SaveChangesAsync();
+
+            // Chuyển hướng về trang giỏ hàng sau khi cập nhật
             return RedirectToAction(nameof(Index));
         }
+
 
         // POST: Xóa sản phẩm khỏi giỏ hàng
         public async Task<IActionResult> RemoveFromCart(int id)

@@ -1,0 +1,155 @@
+﻿@using WebHM.Services
+@model PaginatedList<WebHM.Models.DanhMuc>
+
+@if (User.IsInRole("Admin"))
+{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+else if (User.IsInRole("Seller"))
+{
+    Layout = "~/Views/Shared/_SellerLayout.cshtml";
+}
+else
+{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class=" bg-white dark:bg-gray-900">
+    <div class=" max-w-screen-xl">
+        <!-- Form tìm kiếm -->
+        <form method="GET" asp-action="Index" class="mb-6">
+            <label for="search" class="block text-sm font-medium text-gray-900 dark:text-white">Tìm kiếm danh mục</label>
+            <input type="text"
+                   name="query"
+                   placeholder="Tìm kiếm danh mục"
+                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   value="@ViewBag.SearchQuery" />
+            <button type="submit" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tìm kiếm</button>
+            <a asp-action="Create" type="button" class="mt-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Tạo mới</a>
+        </form>
+
+        <!-- Bảng danh sách danh mục -->
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table id="export-table" class="min-w-full table-auto text-sm text-left text-gray-500 dark:text-gray-300">
+                <thead class="bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                    <tr>
+                        <th class="py-3 px-6">Mã danh mục</th>
+                        <th class="py-3 px-6">Tên danh mục</th>
+                        <th class="py-3 px-6">Mô tả</th>
+                        <th colspan="2" class="text-center py-3 px-6">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr id="row-@item.MaDanhMuc" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td class="py-3 px-6">@item.MaDanhMuc</td>
+                                <td class="py-3 px-6">@item.TenDanhMuc</td>
+                                <td class="py-3 px-6 truncate max-w-xs">@item.MoTa</td>
+                                <td class="py-3 px-6 flex justify-content-between items-center">
+                                    <a asp-action="Edit" asp-route-id="@item.MaDanhMuc" class="px-4 py-2 text-white bg-yellow-500 hover:bg-yellow-600 rounded-lg shadow-md transition duration-200">Sửa</a>
+                                    <button class="delete-button px-4 ml-3 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg shadow-md transition duration-200"
+                                            data-id="@item.MaDanhMuc">
+                                        Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-4">Không có dữ liệu</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4">
+            <div class="col-lg-12 text-center">
+                <div class="pagination-wrap">
+                    <ul>
+                        @if (Model.HasPreviousPage)
+                        {
+                            <li><a href="@Url.Action("Index", new { pageIndex = Model.PageIndex - 1, query = ViewBag.SearchQuery })">Trước</a></li>
+                        }
+                        else
+                        {
+                            <li class="disabled"><a href="#">Trước</a></li>
+                        }
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="@(i == Model.PageIndex ? "active" : "")">
+                                <a href="@Url.Action("Index", new { pageIndex = i, query = ViewBag.SearchQuery })">@i</a>
+                            </li>
+                        }
+                        @if (Model.HasNextPage)
+                        {
+                            <li><a href="@Url.Action("Index", new { pageIndex = Model.PageIndex + 1, query = ViewBag.SearchQuery })">Sau</a></li>
+                        }
+                        else
+                        {
+                            <li class="disabled"><a href="#">Sau</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const deleteButtons = document.querySelectorAll(".delete-button");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                const danhMucId = this.getAttribute("data-id");
+
+                if (confirm("Bạn có chắc chắn muốn xóa không?")) {
+                    fetch(`/DanhMucs/DeleteConfirmed/${danhMucId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    })
+
+                        .then(response => {
+                            if (response.ok) {
+                                document.getElementById(`row-${danhMucId}`).remove();
+                            } else {
+                                alert("Có lỗi xảy ra khi xóa!");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Lỗi:", error);
+                            alert("Không thể xóa mục này.");
+                        });
+                }
+            });
+        });
+    });
+
+</script>
+<style>
+    table {
+        table-layout: auto; /* Điều chỉnh chiều rộng của bảng tự động */
+        width: 100%;
+        overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
+    }
+
+    th, td {
+        white-space: nowrap; /* Ngừng xuống dòng */
+        overflow: hidden; /* Ẩn phần vượt quá */
+        text-overflow: ellipsis; /* Hiển thị dấu ba chấm nếu nội dung bị cắt */
+    }
+
+    td {
+        overflow-x: auto; /* Hiển thị thanh cuộn nếu nội dung dài */
+    }
+
+</style>

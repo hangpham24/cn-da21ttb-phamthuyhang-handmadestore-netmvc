@@ -2,13 +2,16 @@
 
 @{
     ViewData["Title"] = "Create";
-    if (User.IsInRole("Admin"))
+    @if (User.IsInRole("Admin"))
     {
         Layout = "~/Views/Shared/_AdminLayout.cshtml";
     }
+    else if (User.IsInRole("Seller"))
+    {
+        Layout = "~/Views/Shared/_SellerLayout.cshtml";
+    }
     else
     {
-
         Layout = "~/Views/Shared/_Layout.cshtml";
     }
 }

@@ -31,9 +31,10 @@ namespace WebHM.Controllers
                 .Where(dh => dh.ChiTietDonHangs.Any(ct => ct.SanPham.NguoiBanId == sellerId))
                 .CountAsync();
 
-            // Doanh thu
+            // Doanh thu từ các đơn hàng có trạng thái là "Đã giao" hoặc "Đã thanh toán"
             var revenue = await _context.ChiTietDonHangs
-                .Where(ct => ct.SanPham.NguoiBanId == sellerId)
+                .Where(ct => ct.SanPham.NguoiBanId == sellerId &&
+                             (ct.DonHang.TrangThai == "Đã giao" || ct.DonHang.TrangThai == "Đã thanh toán"))
                 .SumAsync(ct => ct.SoLuong * ct.Gia);
 
             // Đơn hàng gần đây (10 đơn hàng mới nhất)
@@ -45,7 +46,7 @@ namespace WebHM.Controllers
 
             // Đơn hàng cần xử lý
             var donHangChoXuLy = await _context.DonHangs
-                .Where(dh => dh.TrangThai == "Đã thanh toán" &&
+                .Where(dh => dh.TrangThai == "Chờ xử lý" &&
                              dh.ChiTietDonHangs.Any(ct => ct.SanPham.NguoiBanId == sellerId))
                 .Include(dh => dh.ChiTietDonHangs)
                 .ToListAsync();
@@ -54,7 +55,7 @@ namespace WebHM.Controllers
             var doanhThuTheoThang = await _context.ChiTietDonHangs
                 .Join(_context.SanPhams, ct => ct.MaSanPham, sp => sp.MaSanPham, (ct, sp) => new { ct, sp })
                 .Join(_context.DonHangs, cs => cs.ct.MaDonHang, dh => dh.MaDonHang, (cs, dh) => new { cs.ct, cs.sp, dh })
-                .Where(c => c.sp.NguoiBanId == sellerId && c.dh.TrangThai == "Đã thanh toán")
+                .Where(c => c.sp.NguoiBanId == sellerId && c.dh.TrangThai == "Đã thanh toán" || c.dh.TrangThai == "Đã giao")
                 .GroupBy(c => new { c.dh.NgayDatHang.Month, c.dh.NgayDatHang.Year })
                 .Select(g => new
                 {

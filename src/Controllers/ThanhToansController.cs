@@ -9,16 +9,18 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebHM.Data;
 using WebHM.Models;
+using WebHM.Services;
 
 namespace WebHM.Controllers
 {
     public class ThanhToansController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public ThanhToansController(ApplicationDbContext context)
+        private readonly SanPhamService _sanPhamService;
+        public ThanhToansController(ApplicationDbContext context, SanPhamService sanPhamService)
         {
             _context = context;
+            _sanPhamService = sanPhamService;
         }
         [HttpPost]
         public async Task<IActionResult> ThanhToan(string FullName, string DiaChi, string SoDienThoai, string PhuongThuc, string OrderId)
@@ -36,7 +38,7 @@ namespace WebHM.Controllers
                 DiaChiGiaoHang = DiaChi,
                 SoDienThoaiGiaoHang = SoDienThoai,
                 NgayDatHang = DateTime.Now,
-                OrderId = OrderId,
+                OrderId = @DateTime.UtcNow.Ticks.ToString(),
                 TongTien = Convert.ToDecimal(ViewBag.TongTien) + 25000, // Tổng tiền bao gồm phí vận chuyển
                 TrangThai = "Chờ xử lý"
             };
@@ -60,6 +62,12 @@ namespace WebHM.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            var donHangCapNhat = await _context.DonHangs.FirstOrDefaultAsync(d => d.OrderId == OrderId);
+           if (donHangCapNhat != null)
+            {
+                await _sanPhamService.CapNhatSoLuongTonKho(donHangCapNhat.MaDonHang);
+            }
 
             // Lưu thông tin thanh toán
             var thanhToan = new ThanhToan

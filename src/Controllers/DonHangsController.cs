@@ -123,9 +123,13 @@ namespace WebHM.Controllers
                     return Forbid(); // Nếu người bán không phải là người bán sản phẩm trong đơn hàng này
                 }
 
-                // Cập nhật trạng thái đơn hàng
-                donHang.TrangThai = "Đã xác nhận";
-
+                if(donHang.TrangThai == "Đã thanh toán" || donHang.TrangThai == "Đã xác nhận")
+                {
+                    donHang.TrangThai = "Đã giao";
+                } else
+                {
+                    donHang.TrangThai = "Đã xác nhận";
+                }
                 // Lưu thay đổi vào cơ sở dữ liệu
                 _context.Update(donHang);
                 await _context.SaveChangesAsync();
@@ -182,29 +186,48 @@ namespace WebHM.Controllers
 
         // GET: DonHangs
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageIndex = 1, int pageSize = 5, string searchString = null)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Lấy User ID của người đang đăng nhập
-            var applicationDbContext = _context.DonHangs.Include(d => d.KhachHang).Include(d => d.ChiTietDonHangs).ThenInclude(ctd => ctd.SanPham);
+            var applicationDbContext = _context.DonHangs
+                .Include(d => d.KhachHang)
+                .Include(d => d.ChiTietDonHangs)
+                .ThenInclude(ctd => ctd.SanPham);
 
-            // Nếu người dùng là Seller, lọc đơn hàng theo sản phẩm của seller
+            IQueryable<DonHang> query;
+
             if (User.IsInRole("Seller"))
             {
-                var donhangseller = applicationDbContext
-                    .Where(d => d.ChiTietDonHangs.Any(ctd => ctd.SanPham.NguoiBanId == userId)); // Chỉ lấy đơn hàng có sản phẩm của người bán
-                return View(await donhangseller.ToListAsync());
+                query = applicationDbContext
+                    .Where(d => d.ChiTietDonHangs.Any(ctd => ctd.SanPham.NguoiBanId == userId));
             }
-
-            // Nếu người dùng là Customer, chỉ lấy đơn hàng của khách hàng đó
-            if (User.IsInRole("Customer"))
+            else if (User.IsInRole("Customer"))
             {
-                var donhangkhachhang = applicationDbContext.Where(d => d.KhachHangId == userId);
-                return View(await donhangkhachhang.ToListAsync());
+                query = applicationDbContext
+                    .Where(d => d.KhachHangId == userId);
+            }
+            else
+            {
+                query = applicationDbContext;
             }
 
-            // Nếu người dùng là Admin, hiển thị tất cả đơn hàng
-            return View(await applicationDbContext.ToListAsync());
+            // Xử lý tìm kiếm
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(d => d.OrderId.Contains(searchString) ||
+                                         d.KhachHang.HoTen.Contains(searchString) ||
+                                         d.TrangThai.Contains(searchString));
+            }
+
+            query = query.OrderByDescending(d => d.TrangThai == "Chờ xử lý") // Sắp xếp ưu tiên "Chờ xử lý"
+                         .ThenByDescending(d => d.NgayDatHang);
+
+            // Tạo danh sách phân trang
+            var paginatedList = await PaginatedList<DonHang>.CreateAsync(query, pageIndex, pageSize);
+
+            return View(paginatedList);
         }
+
 
 
 
@@ -239,14 +262,13 @@ namespace WebHM.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MaDonHang,KhachHangId,DiaChiGiaoHang,SoDienThoaiGiaoHang,NgayDatHang,TongTien,TrangThai")] DonHang donHang)
+        public async Task<IActionResult> Create([Bind("MaDonHang,KhachHangId,NguoiNhan,DiaChiGiaoHang,SoDienThoaiGiaoHang,NgayDatHang,TongTien,TrangThai,OrderId")] DonHang donHang)
         {
-            if (ModelState.IsValid)
-            {
+
                 _context.Add(donHang);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
+           
             ViewData["KhachHangId"] = new SelectList(_context.Users, "Id", "Id", donHang.KhachHangId);
             return View(donHang);
         }
@@ -273,15 +295,13 @@ namespace WebHM.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MaDonHang,KhachHangId,DiaChiGiaoHang,SoDienThoaiGiaoHang,NgayDatHang,TongTien,TrangThai")] DonHang donHang)
+        public async Task<IActionResult> Edit(int id, [Bind("MaDonHang,KhachHangId,NguoiNhan,DiaChiGiaoHang,SoDienThoaiGiaoHang,NgayDatHang,TongTien,TrangThai,OrderId")] DonHang donHang)
         {
             if (id != donHang.MaDonHang)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
                 try
                 {
                     _context.Update(donHang);
@@ -299,7 +319,7 @@ namespace WebHM.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
+           
             ViewData["KhachHangId"] = new SelectList(_context.Users, "Id", "Id", donHang.KhachHangId);
             return View(donHang);
         }

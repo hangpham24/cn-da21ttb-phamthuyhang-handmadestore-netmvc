@@ -32,6 +32,16 @@ namespace WebHM.Controllers
             int pageSize = 5; // Số người dùng trên mỗi trang
             var paginatedUsers = await PaginatedList<ApplicationUser>.CreateAsync(users, pageIndex, pageSize);
 
+            // Lấy vai trò cho từng người dùng
+            var userRoles = new Dictionary<string, string>();
+            foreach (var user in paginatedUsers.Items)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userRoles[user.Id] = string.Join(", ", roles); // Kết hợp vai trò thành chuỗi
+            }
+
+            ViewBag.UserRoles = userRoles; // Truyền danh sách vai trò vào ViewBag
+
             return View(paginatedUsers);
         }
 

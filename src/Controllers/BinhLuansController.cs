@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebHM.Data;
 using WebHM.Models;
+using WebHM.Services;
 
 namespace WebHM.Controllers
 {
@@ -42,11 +43,34 @@ namespace WebHM.Controllers
 
 
         // GET: BinhLuans
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString, int pageIndex = 1)
         {
-            var applicationDbContext = _context.BinhLuans.Include(b => b.KhachHang).Include(b => b.SanPham);
-            return View(await applicationDbContext.ToListAsync());
+            // Lọc bình luận theo từ khóa tìm kiếm
+            var applicationDbContext = _context.BinhLuans
+                .Include(b => b.KhachHang)
+                .Include(b => b.SanPham)  // Đảm bảo rằng .Include được gọi đúng kiểu dữ liệu
+                .AsQueryable();  // Đảm bảo rằng kết quả là một IQueryable
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                applicationDbContext = applicationDbContext.Where(b => b.KhachHang.HoTen.Contains(searchString) || b.NoiDungBinhLuan.Contains(searchString));
+            }
+
+            // Định nghĩa số lượng bản ghi mỗi trang
+            int pageSize = 5;
+            var count = await applicationDbContext.CountAsync(); // Đếm tổng số bản ghi
+            var items = await applicationDbContext
+                                .Skip((pageIndex - 1) * pageSize) 
+                                .Take(pageSize)                    
+                                .ToListAsync();
+
+            var paginatedList = new PaginatedList<BinhLuan>(items, count, pageIndex, pageSize);
+
+            // Trả lại view cùng dữ liệu phân trang và tìm kiếm
+            ViewBag.SearchQuery = searchString; // Để giữ giá trị tìm kiếm trong input
+            return View(paginatedList);
         }
+
 
         // GET: BinhLuans/Details/5
         public async Task<IActionResult> Details(int? id)

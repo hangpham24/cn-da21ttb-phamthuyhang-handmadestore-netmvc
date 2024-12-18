@@ -16,14 +16,22 @@
 <!-- Thêm Font Awesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+
 <!-- cart -->
-<div class="cart-section mt-150 mb-150">
+<div class="cart-section mt-100 mb-150">
     <div class="container">
+            <h1 class="text-center">GIỎ HÀNG</h1>
         <div class="row">
-            <div class="col-lg-8 col-md-12">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="ml-3 alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+            <div class="@(!Model.Any() ? "w-full" : "col-lg-8 col-md-12")">
+
                 <div class="cart-table-wrap">
                     <form method="post" action="@Url.Action("UpdateCart", "GioHangs")">
-                        <!-- Thêm lớp table-responsive -->
                         <div class="table-responsive">
                             <table class="cart-table" style="width: 100%; text-align: center;">
                                 <thead class="cart-table-head">
@@ -50,7 +58,11 @@
                                             </td>
                                             <td class="product-price">@ChuyenTienTe.Dec2VND(item.SanPham.Gia)</td>
                                             <td class="product-quantity">
-                                                <input type="number" name="soLuong[@item.MaGioHang]" value="@item.SoLuong" min="1" style="text-align: center;" />
+                                                <input type="number" name="soLuong[@item.MaGioHang]"
+                                                       value="@item.SoLuong"
+                                                       min="1"
+                                                       style="text-align: center;"
+                                                       onchange="this.form.submit();" />
                                             </td>
                                             <td class="product-total">@ChuyenTienTe.Dec2VND(item.SoLuong * item.SanPham.Gia)</td>
                                         </tr>
@@ -58,20 +70,14 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="flex justify-content-around">
-                            <div class="cart-buttons" style="text-align: center;">
-                                
-                                <button type="submit" class="boxed-btn black"><i class="fas fa-sync text-black hover:text-white"></i> Làm mới</button>
-                            </div>
-                            <div class="cart-buttons" style="text-align: center;">
-                                <a href="/SanPhams" class="boxed-btn black"> <i class="fas fa-shopping-cart"></i> Tiếp tục mua</a>
-                            </div>
-                        </div>
                     </form>
+                    <div class="cart-buttons" style="text-align: center;">
+                        <a href="/SanPhams" class="boxed-btn black"> <i class="fas fa-shopping-cart"></i> Tiếp tục mua</a>
+                    </div>
                 </div>
 
             </div>
-
+            @if(Model.Any()){
             <div class="col-lg-4">
                 <div class="total-section">
                     <table class="total-table" style="width: 100%;">
@@ -112,6 +118,7 @@
                     </div>
                 </div>
             </div>
+            }
         </div>
     </div>
 </div>

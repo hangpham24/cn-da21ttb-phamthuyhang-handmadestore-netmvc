@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\WebHM.props" />
+</Project>

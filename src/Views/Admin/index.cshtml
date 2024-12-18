@@ -1,4 +1,5 @@
-﻿@{
+﻿@using WebHM.Services
+@{
     ViewData["Title"] = "Dashboard - Bảng điều khiển tổng quan";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
@@ -19,7 +20,7 @@
             </div>
             <div>
                 <p class="text-gray-700 text-sm">Tổng số sản phẩm</p>
-                <h3 class="text-xl font-bold">120</h3>
+                <h3 class="text-xl font-bold">@ViewBag.TotalProducts</h3>
             </div>
         </div>
 
@@ -30,7 +31,7 @@
             </div>
             <div>
                 <p class="text-gray-700 text-sm">Tổng đơn hàng</p>
-                <h3 class="text-xl font-bold">75</h3>
+                <h3 class="text-xl font-bold">@ViewBag.TotalOrders</h3>
             </div>
         </div>
 
@@ -41,7 +42,7 @@
             </div>
             <div>
                 <p class="text-gray-700 text-sm">Doanh thu (VNĐ)</p>
-                <h3 class="text-xl font-bold">25,000,000</h3>
+                <h3 class="text-xl font-bold">@ChuyenTienTe.Dec2VND(ViewBag.TotalRevenue)</h3>
             </div>
         </div>
 
@@ -52,7 +53,7 @@
             </div>
             <div>
                 <p class="text-gray-700 text-sm">Khách hàng mới</p>
-                <h3 class="text-xl font-bold">10</h3>
+                <h3 class="text-xl font-bold">@ViewBag.NewCustomers</h3>
             </div>
         </div>
     </div>
@@ -61,14 +62,13 @@
     <div class="bg-white p-4 rounded-lg shadow-md mb-6">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Đơn hàng đang chờ xử lý</h2>
         <ul class="divide-y divide-gray-200">
-            <li class="py-2 flex justify-between">
-                <span class="text-gray-700">Đơn hàng #1001</span>
-                <span class="text-blue-500">Đang xử lý</span>
-            </li>
-            <li class="py-2 flex justify-between">
-                <span class="text-gray-700">Đơn hàng #1002</span>
-                <span class="text-blue-500">Đang xử lý</span>
-            </li>
+            @foreach (var order in ViewBag.PendingOrders)
+            {
+                <li class="py-2 flex justify-between">
+                    <span class="text-gray-700">Đơn hàng #@order.OrderId</span>
+                    <span class="text-blue-500">@order.Status</span>
+                </li>
+            }
         </ul>
     </div>
 
@@ -82,14 +82,17 @@
     <div class="bg-white p-4 rounded-lg shadow-md">
         <h2 class="text-lg font-semibold text-gray-800 mb-3">Sản phẩm bán chạy nhất</h2>
         <ul class="divide-y divide-gray-200">
-            <li class="py-2 flex justify-between">
-                <span class="text-gray-700">Sản phẩm A</span>
-                <span class="text-gray-500">50 đơn</span>
-            </li>
-            <li class="py-2 flex justify-between">
-                <span class="text-gray-700">Sản phẩm B</span>
-                <span class="text-gray-500">30 đơn</span>
-            </li>
+            @if (ViewBag.TopSellingProducts != null)
+            {
+                @foreach (var product in ViewBag.TopSellingProducts)
+                {
+                    <li class="py-2 flex justify-between">
+                        <span class="text-gray-700">@product.ProductName</span>
+                        <span class="text-gray-500">@product.QuantitySold đơn</span>
+                    </li>
+                }
+            }
+
         </ul>
     </div>
 </div>
@@ -104,7 +107,7 @@
                 labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
                 datasets: [{
                     label: 'Doanh thu (VNĐ)',
-                    data: [3000000, 5000000, 7000000, 2000000, 6000000, 8000000],
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.RevenueData)),
                     borderColor: '#4F46E5',
                     backgroundColor: 'rgba(79, 70, 229, 0.1)',
                     borderWidth: 2,

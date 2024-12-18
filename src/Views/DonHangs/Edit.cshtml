@@ -1,4 +1,5 @@
-﻿@model WebHM.Models.DonHang
+﻿@using System.Security.Claims
+@model WebHM.Models.DonHang
 
 @{
     ViewData["Title"] = "Edit";
@@ -25,35 +26,61 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="MaDonHang" />
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="form-group">
+                    <label asp-for="KhachHangId" class="control-label"></label>
+                    <select asp-for="KhachHangId" class="form-control" asp-items="ViewBag.KhachHangId"></select>
+                    <span asp-validation-for="KhachHangId" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <input asp-for="KhachHangId" class="form-control" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" hidden />
+                </div>
+            }
             <div class="form-group">
-                <label asp-for="KhachHangId" class="control-label"></label>
-                <select asp-for="KhachHangId" class="form-control" asp-items="ViewBag.KhachHangId"></select>
-                <span asp-validation-for="KhachHangId" class="text-danger"></span>
+                <label asp-for="NguoiNhan" class="control-label">Người nhận hàng</label>
+                <input asp-for="NguoiNhan" class="form-control" />
+                <span asp-validation-for="NguoiNhan" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DiaChiGiaoHang" class="control-label"></label>
+                <label asp-for="DiaChiGiaoHang" class="control-label">Địa chỉ giao hàng</label>
                 <input asp-for="DiaChiGiaoHang" class="form-control" />
                 <span asp-validation-for="DiaChiGiaoHang" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SoDienThoaiGiaoHang" class="control-label"></label>
+                <label asp-for="SoDienThoaiGiaoHang" class="control-label">Số điện thoại nhận hàng</label>
                 <input asp-for="SoDienThoaiGiaoHang" class="form-control" />
                 <span asp-validation-for="SoDienThoaiGiaoHang" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NgayDatHang" class="control-label"></label>
+                <label asp-for="NgayDatHang" class="control-label">Ngày đặt hàng</label>
                 <input asp-for="NgayDatHang" class="form-control" />
                 <span asp-validation-for="NgayDatHang" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TongTien" class="control-label"></label>
+                <label asp-for="TongTien" class="control-label">Tổng tiền đơn hàng</label>
                 <input asp-for="TongTien" class="form-control" />
                 <span asp-validation-for="TongTien" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TrangThai" class="control-label"></label>
-                <input asp-for="TrangThai" class="form-control" />
+                <label asp-for="TrangThai" class="control-label">Trạng thái</label>
+                <select asp-for="TrangThai" class="form-control">
+                    <option value="Đã giao">Đã giao</option>
+                    <option value="Đã thanh toán">Đã thanh toán</option>
+                    <option value="Đã xác nhận">Đã xác nhận</option>
+                    <option value="Hủy">Hủy</option>
+                    <option value="Chờ xử lý">Chờ xử lý</option>
+                </select>
                 <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OrderId" class="control-label">OrderId</label>
+                <input asp-for="OrderId" type="text" value="@Guid.NewGuid()" hidden />
+                <span asp-validation-for="OrderId" class="text-danger"></span>
+
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -67,5 +94,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -230,6 +230,26 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hpVGlldERvbkhhbmdzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/HKI 2024-2025/DoANCN/WebHM/src/Views/DanhMucs/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFuaE11Y3NcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/HKI 2024-2025/DoANCN/WebHM/src/Views/DanhMucs/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFuaE11Y3NcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/HKI 2024-2025/DoANCN/WebHM/src/Views/DanhMucs/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFuaE11Y3NcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/HKI 2024-2025/DoANCN/WebHM/src/Views/DanhMucs/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFuaE11Y3NcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/HKI 2024-2025/DoANCN/WebHM/src/Views/DanhMucs/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGFuaE11Y3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/HKI 2024-2025/DoANCN/WebHM/src/Views/DonHangs/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRG9uSGFuZ3NcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

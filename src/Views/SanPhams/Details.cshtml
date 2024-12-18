@@ -358,21 +358,33 @@ else
 
     // Improved addToCart function
     async function addToCart(event) {
-        event.preventDefault();
+        event.preventDefault(); // Ngăn hành động mặc định của form
         const sanPhamId = $('input[name="sanPhamId"]').val();
         const soLuong = $('#quantity').val();
+
+        if (!sanPhamId || !soLuong || soLuong <= 0) {
+            showModal('error', 'Vui lòng nhập số lượng hợp lệ!', 'exclamation-circle');
+            return;
+        }
+
         try {
             const response = await $.post('@Url.Action("ThemVaoGioHang", "GioHangs")', {
                 sanPhamId,
-                soLuong
+                soLuong,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
             });
 
-            showModal('success', 'Sản phẩm đã được thêm vào giỏ hàng!', 'check-circle');
-            setTimeout(() => (window.location.href = '/Giohangs'), 1500);
+            if (response.success) {
+                showModal('success', response.message, 'check-circle');
+                setTimeout(() => (window.location.href = '/GioHangs'), 1500);
+            } else {
+                showModal('error', response.message, 'exclamation-circle');
+            }
         } catch (error) {
             showModal('error', 'Có lỗi xảy ra khi thêm vào giỏ hàng!', 'exclamation-circle');
         }
     }
+
 
     // Optimized modal management
     function showModal(status, message, icon) {

@@ -1,7 +1,8 @@
-﻿@model WebHM.Models.DonHang
+﻿@using WebHM.Services
+@model WebHM.Models.DonHang
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi Tiết Đơn Hàng";
     if (User.IsInRole("Admin"))
     {
         Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -16,51 +17,71 @@
     }
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Chi Tiết Đơn Hàng</h1>
 
-<div>
-    <h4>DonHang</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DiaChiGiaoHang)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DiaChiGiaoHang)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SoDienThoaiGiaoHang)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SoDienThoaiGiaoHang)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NgayDatHang)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NgayDatHang)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TongTien)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TongTien)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrangThai)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrangThai)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.KhachHang)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.KhachHang.Id)
-        </dd>
-    </dl>
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Thông Tin Đơn Hàng</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.DiaChiGiaoHang)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.DiaChiGiaoHang)
+                </dd>
+
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.SoDienThoaiGiaoHang)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.SoDienThoaiGiaoHang)
+                </dd>
+
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.NgayDatHang)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.NgayDatHang)
+                </dd>
+
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.TongTien)
+                </dt>
+                <dd class="col-sm-9">
+                    @(ChuyenTienTe.Dec2VND(Model.TongTien))
+                </dd>
+
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.TrangThai)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.TrangThai)
+                </dd>
+
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.KhachHang)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.KhachHang.HoTen)
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a asp-action="Edit" asp-route-id="@Model?.MaDonHang" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit"></i> Chỉnh Sửa
+        </a>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.MaDonHang">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<!-- Thêm Font Awesome vào head -->
+@section Scripts {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+}

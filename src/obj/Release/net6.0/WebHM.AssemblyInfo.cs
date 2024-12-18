@@ -11,11 +11,12 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-WebHM-e101195d-036c-4eba-9d6f-cc317d42f322")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebHM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1baf229835c9dc4d76e5b6d6c76261e73c59a174")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e31da6f4228826aae650065734999ee6193b97b3")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebHM")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebHM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

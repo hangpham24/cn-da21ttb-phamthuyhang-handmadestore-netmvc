@@ -42,6 +42,12 @@
             <span asp-validation-for="MoTa" class="text-xs text-red-500"></span>
         </div>
 
+        <div class="sm:col-span-2">
+            <label asp-for="SoLuongTon" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Số lượng tồn</label>
+            <input asp-for="SoLuongTon" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Nhập mô tả sản phẩm"></input>
+            <span asp-validation-for="SoLuongTon" class="text-xs text-red-500"></span>
+        </div>
+
         <!-- Hình ảnh -->
         <div>
             <label asp-for="HinhAnh" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hình ảnh</label>

@@ -17,8 +17,8 @@ namespace WebHM.Models
         public string MoTa { get; set; }
 
         public string HinhAnh { get; set; }
-        public int SoLuongTon { get; set; }
 
+        public int SoLuongTon { get; set; }
         public int MaDanhMuc { get; set; }
         public DanhMuc DanhMuc { get; set; }
 
@@ -29,7 +29,6 @@ namespace WebHM.Models
 /*        public ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();*/
         public ICollection<BinhLuan> BinhLuans { get; set; } = new List<BinhLuan>();
         public ICollection<GioHang> GioHangs { get; set; } = new List<GioHang>();
-        public ICollection<ThongKeDoanhSo> ThongKeDoanhSos { get; set; } = new List<ThongKeDoanhSo>();
 
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
     }

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Eventing.Reader;
 using WebHM.Data;
 using WebHM.Models.Momo;
 using WebHM.Services;
@@ -11,11 +9,12 @@ namespace WebHM.Controllers
     {
         private IMomoService _momoService;
         private readonly ApplicationDbContext _context;
-        public CheckoutController(IMomoService momoService, ApplicationDbContext context)
+        private readonly SanPhamService _sanPhamService;
+        public CheckoutController(IMomoService momoService, ApplicationDbContext context, SanPhamService sanPhamService)
         {
             _momoService = momoService;
             _context = context;
-
+            _sanPhamService = sanPhamService;
         }
         [HttpGet]
         public async Task<IActionResult> PaymentCallBack(PaymentCallback paymentCallback)
@@ -27,11 +26,19 @@ namespace WebHM.Controllers
                 var donHang = _context.DonHangs.FirstOrDefault(s => s.OrderId == paymentCallback.OrderId);
                 if (donHang != null)
                 {
+                    await _sanPhamService.CapNhatSoLuongTonKho(donHang.MaDonHang);
                     donHang.TrangThai = "Đã thanh toán";
                 }
+
                 await _context.SaveChangesAsync();
+
+
                 return RedirectToAction("XacNhanThanhToan", "ThanhToans", new { madonhang = donHang.MaDonHang });
             }
+
+
+
+
             // Tạo đối tượng PaymentCallback từ các tham số
             var callbackData = new PaymentCallback
             {
