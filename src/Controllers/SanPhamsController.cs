@@ -57,7 +57,7 @@ namespace WebHM.Controllers
                 ViewBag.SearchQuery = query; // Lưu để hiển thị lại trong ô tìm kiếm
             }
 
-            int pageSize = 3; // Số sản phẩm trên mỗi trang
+            int pageSize = 9; // Số sản phẩm trên mỗi trang
                               // Lấy danh sách sản phẩm phân trang
             var phantrangSanPhams = await PaginatedList<SanPham>.CreateAsync(sanPhams, pageIndex, pageSize);
 

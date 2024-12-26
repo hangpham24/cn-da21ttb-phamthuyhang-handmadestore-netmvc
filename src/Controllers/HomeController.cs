@@ -17,8 +17,11 @@ namespace WebHM.Controllers
         {
             return View();
         }
-
-        public IActionResult Privacy()
+		public async Task<IActionResult> Vechungtoi()
+		{
+			return View();
+		}
+		public IActionResult Privacy()
         {
             return View();
         }

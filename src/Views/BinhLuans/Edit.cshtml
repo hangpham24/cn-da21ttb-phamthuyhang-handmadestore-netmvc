@@ -13,50 +13,58 @@
     }
 }
 
-<h1>Edit</h1>
+<h1 class="text-center" style="margin-top: 20px;">Chỉnh sửa</h1>
 
-<h4>BinhLuan</h4>
+<h4 class="text-center">Bình Luận</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+
+<div class="d-flex justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit" class="p-4 border rounded shadow bg-light">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="MaBinhLuan" />
+
             <div class="form-group">
                 <label asp-for="MaSanPham" class="control-label"></label>
                 <select asp-for="MaSanPham" class="form-control" asp-items="ViewBag.MaSanPham"></select>
                 <span asp-validation-for="MaSanPham" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="KhachHangId" class="control-label"></label>
                 <select asp-for="KhachHangId" class="form-control" asp-items="ViewBag.KhachHangId"></select>
                 <span asp-validation-for="KhachHangId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="DiemDanhGia" class="control-label"></label>
                 <input asp-for="DiemDanhGia" class="form-control" />
                 <span asp-validation-for="DiemDanhGia" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="NoiDungBinhLuan" class="control-label"></label>
                 <input asp-for="NoiDungBinhLuan" class="form-control" />
                 <span asp-validation-for="NoiDungBinhLuan" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="NgayBinhLuan" class="control-label"></label>
                 <input asp-for="NgayBinhLuan" class="form-control" />
                 <span asp-validation-for="NgayBinhLuan" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="form-group text-center">
+                <input type="submit" value="Lưu" class="btn btn-primary w-50" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
 </div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

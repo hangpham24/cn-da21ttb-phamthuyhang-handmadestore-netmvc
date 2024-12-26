@@ -117,47 +117,50 @@
                             <li class="current-list-item">
                                 <a href="/">Home</a>
                                 @*                                 <ul class="sub-menu">
-                                <li><a href="index.html">Static Home</a></li>
-                                <li><a href="index_2.html">Slider Home</a></li>
-                                </ul> *@
+            <li><a href="index.html">Static Home</a></li>
+            <li><a href="index_2.html">Slider Home</a></li>
+            </ul> *@
+                            <li><a href="/Home/Vechungtoi">Giới thiệu</a></li>
                             </li>
                             @if (User.IsInRole("Admin"))
                             {
 
-                                <li><a href="/Admin">Admin</a></li>
+                            <li><a href="/Admin">Quản trị viên</a></li>
                             }
 
                             <li><a href="/SanPhams">Sản phẩm</a></li>
+                            @if (SignInManager.IsSignedIn(User)){
                             <li><a href="/DonHangs">Đơn hàng của tôi</a></li>
-                            <li>
-                                <a href="#">Pages</a>
-                                <ul class="sub-menu">
-                                    <li><a href="404.html">404 page</a></li>
-                                    <li><a href="about.html">About</a></li>
-                                    <li><a href="cart.html">Cart</a></li>
-                                    <li><a href="checkout.html">Check Out</a></li>
-                                    <li><a href="contact.html">Contact</a></li>
-                                    <li><a href="news.html">News</a></li>
-                                    <li><a href="shop.html">Shop</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="news.html">News</a>
-                                <ul class="sub-menu">
-                                    <li><a href="news.html">News</a></li>
-                                    <li><a href="single-news.html">Single News</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="contact.html">Contact</a></li>
-                            <li>
-                                <a href="shop.html">Shop</a>
-                                <ul class="sub-menu">
-                                    <li><a href="shop.html">Shop</a></li>
-                                    <li><a href="checkout.html">Check Out</a></li>
-                                    <li><a href="single-product.html">Single Product</a></li>
-                                    <li><a href="cart.html">Cart</a></li>
-                                </ul>
-                            </li>
+                            }
+                            @* <li>
+            <a href="#">Pages</a>
+            <ul class="sub-menu">
+                <li><a href="404.html">404 page</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="checkout.html">Check Out</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="news.html">News</a></li>
+                <li><a href="shop.html">Shop</a></li>
+            </ul>
+        </li>*@
+                            @* <li>
+            <a href="news.html">News</a>
+            <ul class="sub-menu">
+                <li><a href="news.html">News</a></li>
+                <li><a href="single-news.html">Single News</a></li>
+            </ul>
+        </li>*@
+                            <li><a href="/LienHe/">Thông tin liên hệ</a></li>
+                            @* <li>
+            <a href="shop.html">Shop</a>
+            <ul class="sub-menu">
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="checkout.html">Check Out</a></li>
+                <li><a href="single-product.html">Single Product</a></li>
+                <li><a href="cart.html">Cart</a></li>
+            </ul>
+        </li>*@
                             <li>
                                 <div class="header-icons flex">
                                     <!-- Shopping cart icon -->
@@ -168,37 +171,70 @@
                                     </div>
 
                                     @*                    <!-- Search icon, hidden on mobile -->
-                                    <div class="search-icon">
-                                    <a class="mobile-hide search-bar-icon hidden sm:block" href="#">
-                                    <i class="fas fa-search"></i>
-                                    </a>
-                                    </div> *@
+        <div class="search-icon">
+        <a class="mobile-hide search-bar-icon hidden sm:block" href="#">
+        <i class="fas fa-search"></i>
+        </a>
+        </div> *@
 
-                                    <!-- User avatar dropdown -->
-                                    <div class="user-icon">
+                                    <!-- User Avatar Dropdown -->
+                                    <div class="relative user-icon">
                                         @if (SignInManager.IsSignedIn(User))
-                                        {
-                                            var userManager = Context.RequestServices.GetService<UserManager<WebHM.Models.ApplicationUser>>();
-                                            var user = await userManager.GetUserAsync(User);
+    {
+        var userManager = Context.RequestServices.GetService<UserManager<WebHM.Models.ApplicationUser>>();
+        var user = await userManager.GetUserAsync(User);
 
-                                            <a href="#" class="user-avatar">
-                                                <img src="@user.UrlAnhDaiDien" style="border-radius: 50%; width: 25px; height: 25px" alt="User Avatar" />
+                                        <div class="flex items-center space-x-2">
+                                            <a href="#" id="userDropdown" class="user-avatar relative flex items-center" aria-haspopup="true" aria-expanded="false">
+                                                <img src="@user.UrlAnhDaiDien" class="rounded-full w-8 h-8 border border-gray-300" alt="User Avatar" />
                                             </a>
-                                            <ul class="sub-menu">
-                                                <li>
-                                                    Hello @User.Identity?.Name! <br />
-                                                    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                                        <button type="submit" style="background: none; border: none; cursor: pointer;">Logout</button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        }
-                                        else
-                                        {
-                                            <a asp-area="Identity" asp-page="/Account/Login" class="none">Login</a>
-                                            <a asp-area="Identity" asp-page="/Account/Register" class="register-link">Register</a>
-                                        }
+                                        </div>
+
+                                        <ul id="dropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                                            <li class="px-4 py-2 text-sm text-gray-700">
+                                                <a style="margin-left: -20px" href="/Profile/UpdateProfile">
+                                                    <strong style="color: black">@User.Identity?.Name.Split("@@")[0]</strong>
+                                                </a>
+                                            </li>
+                                            <li class="border-t px-4 py-2">
+                                                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                                    <button type="submit" class="w-full text-left text-red-600 hover:text-red-800">Đăng xuất</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+    }
+    else
+    {
+                                        <div class="space-x-4">
+                                            <a asp-area="Identity" asp-page="/Account/Login" class="text-indigo-600 hover:text-indigo-800">Đăng nhập</a>
+                                            <a asp-area="Identity" asp-page="/Account/Register" class="text-green-600 hover:text-green-800">Đăng ký</a>
+                                        </div>
+    }
                                     </div>
+
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', () => {
+                                            const userDropdown = document.getElementById('userDropdown');
+                                            const dropdownMenu = document.getElementById('dropdownMenu');
+
+                                            userDropdown?.addEventListener('click', (e) => {
+                                                e.preventDefault();
+                                                dropdownMenu.classList.toggle('hidden');
+                                            });
+
+                                            document.addEventListener('click', (e) => {
+                                                if (!userDropdown?.contains(e.target) && !dropdownMenu?.contains(e.target)) {
+                                                    dropdownMenu.classList.add('hidden');
+                                                }
+                                            });
+                                        });
+                                    </script>
+
+                                    <style>
+                                        .user-avatar:hover img {
+                                            border-color: #4f46e5; /* Indigo 600 */
+                                        }
+                                    </style>
                                 </div>
                             </li>
                         </ul>
@@ -223,7 +259,7 @@
                     <div class="search-bar-tablecell">
                         <h3>Search For:</h3>
                         <input type="text" placeholder="Keywords">
-                        <button type="submit">Search <i class="fas fa-search"></i></button>
+                        <button type="submit">Tìm kiếm <i class="fas fa-search"></i></button>
                     </div>
                 </div>
             </div>
@@ -233,18 +269,22 @@
 <!-- end search area -->
 <div style="padding-bottom: 100px; background-color: #051922;">
 </div>
+@*<div style="margin-bottom: 30px">*@
 
 @RenderBody()
+@*</div>*@
 
-
+@*<div class="footer">
+    <p>&copy; 2024 HandMade Store | Được làm bằng tình yêu và sự sáng tạo.</p>
+</div>*@
 @*
 
-<footer style="background-color: #051922; margin-top: 50px" >
-    <div class="w-full mx-auto p-4 md:py-8">
-        <span class="block text-sm text-white sm:text-center dark:text-white">© 2024 <a href="https://www.facebook.com/hang.t.kham" class="hover:underline">Thiết kế bởi Phạm Thúy Hằng</a></span>
-    </div>
-</footer>
- *@
+    <footer style="background-color: #051922; margin-top: 50px" >
+        <div class="w-full mx-auto p-4 md:py-8">
+            <span class="block text-sm text-white sm:text-center dark:text-white">© 2024 <a href="https://www.facebook.com/hang.t.kham" class="hover:underline">Thiết kế bởi Phạm Thúy Hằng</a></span>
+        </div>
+    </footer>
+*@
 
 </html>
 <!-- jquery -->
@@ -277,6 +317,21 @@
 
 @await RenderSectionAsync("Scripts", required: false)
 <style>
+   
+
+    /* Footer Section */
+   /* .footer {
+        background-image: linear-gradient(135deg, #ff7675, #f8b500);
+        color: white;
+        text-align: center;
+        padding: 20px;
+        margin-top: 40px;
+        border-radius: 10px 10px 0 0;
+    }
+
+        .footer p {
+            font-size: 1em;
+        }*/
     .header-icons .sub-menu {
         display: none;
         position: absolute;
