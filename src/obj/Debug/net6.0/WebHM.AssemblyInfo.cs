@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebHM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c123e7c1e58385b608f09c6af81379ebae1810a7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d650e970dbd2adda348a853aa2befdf2bdf36885")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebHM")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebHM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

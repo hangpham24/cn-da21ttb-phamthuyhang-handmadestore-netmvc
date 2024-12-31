@@ -22,7 +22,29 @@ namespace WebHM.Controllers
             _context = context;
         }
 
-        [Authorize(Roles = "Admin,Seller")]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public IActionResult HuyDonHang([FromForm] int maDonHang)
+		{
+			if (maDonHang <= 0)
+			{
+				return BadRequest("Mã đơn hàng không hợp lệ.");
+			}
+
+			var donHang = _context.DonHangs.FirstOrDefault(d => d.MaDonHang == maDonHang);
+			if (donHang == null || donHang.TrangThai != "Chờ xử lý")
+			{
+				return NotFound("Không tìm thấy đơn hàng hoặc trạng thái không hợp lệ.");
+			}
+
+			donHang.TrangThai = "Hủy";
+			_context.Update(donHang);
+			_context.SaveChanges();
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		[Authorize(Roles = "Admin,Seller")]
         public async Task<IActionResult> ThongKeDoanhSo(string nguoiBanId, int? thang, int? nam, int? danhMucId, int pageIndex = 1)
         {
             if(User.IsInRole("Seller"))
