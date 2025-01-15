@@ -84,7 +84,7 @@
         <ul class="divide-y divide-gray-200">
             @if (ViewBag.TopSellingProducts != null)
             {
-                @foreach (var product in ViewBag.TopSellingProducts)
+                foreach (var product in ViewBag.TopSellingProducts)
                 {
                     <li class="py-2 flex justify-between">
                         <span class="text-gray-700">@product.ProductName</span>

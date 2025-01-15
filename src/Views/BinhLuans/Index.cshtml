@@ -73,7 +73,7 @@ else
             <tbody>
                 @if (Model != null && Model.Items.Any())
                 {
-                    @foreach (var item in Model.Items)
+                    foreach (var item in Model.Items)
                     {
                         <tr>
                             <td class="py-3 px-6">@item.MaBinhLuan</td>
